@@ -9,11 +9,14 @@ export default {
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorLight,
   },
-  dark: {
-    text: '#fff',
-    background: '#000',
-    tint: tintColorDark,
-    tabIconDefault: '#ccc',
-    tabIconSelected: tintColorDark,
-  },
+  dark: '#000000',
+  // dark: {
+  //   text: '#fff',
+  //   background: '#000',
+  //   tint: tintColorDark,
+  //   tabIconDefault: '#ccc',
+  //   tabIconSelected: tintColorDark,
+  // },
+  primary: '#E2EF09',
+  grey: '#5E5D5E',
 };
