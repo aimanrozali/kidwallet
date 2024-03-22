@@ -3,14 +3,14 @@ import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import DashboardHeader from '@/components/DashboardHeader'
 import DashboardGraph from '@/components/DashboardGraph'
-import ManageEwallet from '@/components/ManageEwallet'
+import EwalletList from '@/components/EwalletList'
 
 const Dashboard = () => {
   return (
     <SafeAreaView style={{ backgroundColor: '#fff', flex: 1 }}>
       <DashboardHeader />
       <DashboardGraph />
-      <ManageEwallet />
+      <EwalletList />
     </SafeAreaView>
   )
 }

@@ -1,0 +1,163 @@
+[
+  {
+    "id": 1,
+    "meal_name": "Grilled Chicken Salad",
+    "price": 8.99,
+    "imgUrl": "https://th.bing.com/th/id/R.44b3da7d3394bca2ce576c17a4686ec1?rik=VDhng8yT8jmeEQ&riu=http%3a%2f%2fnutritiouslife.com%2fwp-content%2fuploads%2f2010%2f05%2fshutterstock_274855409-copy.jpg&ehk=2x435C5dIr0%2fP4lGsEv2GxqHMFNamRX0gcQf%2bzCzMIA%3d&risl=1&pid=ImgRaw&r=0",
+    "calories": 350,
+    "nutrition_facts": {
+      "protein": "25g",
+      "carbohydrates": "15g",
+      "fat": "12g",
+      "fiber": "6g"
+    },
+    "allergens": [
+      "none"
+    ]
+  },
+  {
+    "id": 2,
+    "meal_name": "Vegetable Pasta",
+    "price": 10.49,
+    "imgUrl": "https://plus.unsplash.com/premium_photo-1661432769134-758550b8fedb?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "calories": 420,
+    "nutrition_facts": {
+      "protein": "12g",
+      "carbohydrates": "50g",
+      "fat": "8g",
+      "fiber": "8g"
+    },
+    "allergens": [
+      "gluten"
+    ]
+  },
+  {
+    "id": 3,
+    "meal_name": "Salmon Fillet",
+    "price": 14.99,
+    "imgUrl": "https://plus.unsplash.com/premium_photo-1701015785997-30de0ba44aa0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "calories": 400,
+    "nutrition_facts": {
+      "protein": "30g",
+      "carbohydrates": "5g",
+      "fat": "20g",
+      "fiber": "2g"
+    },
+    "allergens": [
+      "fish"
+    ]
+  },
+  {
+    "id": 4,
+    "meal_name": "Quinoa Salad",
+    "price": 9.99,
+    "imgUrl": "https://plus.unsplash.com/premium_photo-1705003210677-11bbd1392bbf?q=80&w=2072&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "calories": 320,
+    "nutrition_facts": {
+      "protein": "15g",
+      "carbohydrates": "40g",
+      "fat": "10g",
+      "fiber": "10g"
+    },
+    "allergens": [
+      "none"
+    ]
+  },
+  {
+    "id": 5,
+    "meal_name": "Tofu Stir-Fry",
+    "price": 7.99,
+    "imgUrl": "https://hips.hearstapps.com/hmg-prod/images/190130-tofu-stir-fry-horizontal-150-1549302524.jpg",
+    "calories": 280,
+    "nutrition_facts": {
+      "protein": "20g",
+      "carbohydrates": "30g",
+      "fat": "15g",
+      "fiber": "7g"
+    },
+    "allergens": [
+      "soy"
+    ]
+  },
+  {
+    "id": 6,
+    "meal_name": "Beef Burger",
+    "price": 11.99,
+    "imgUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMQPFfQBOmxwKMmYZJKbuu--wYYKH85_hpjdqI9FYGDA&s",
+    "calories": 550,
+    "nutrition_facts": {
+      "protein": "35g",
+      "carbohydrates": "40g",
+      "fat": "25g",
+      "fiber": "5g"
+    },
+    "allergens": [
+      "gluten"
+    ]
+  },
+  {
+    "id": 7,
+    "meal_name": "Caesar Salad",
+    "price": 7.49,
+    "imgUrl": "https://www.thespruceeats.com/thmb/DRaBINVopeoHOpjJn66Yh7pMBSc=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/classic-caesar-salad-recipe-996054-Hero_01-33c94cc8b8e841ee8f2a815816a0af95.jpg",
+    "calories": 320,
+    "nutrition_facts": {
+      "protein": "20g",
+      "carbohydrates": "25g",
+      "fat": "15g",
+      "fiber": "5g"
+    },
+    "allergens": [
+      "dairy"
+    ]
+  },
+  {
+    "id": 8,
+    "meal_name": "Chicken Tikka Masala",
+    "price": 12.99,
+    "imgUrl": "https://hips.hearstapps.com/hmg-prod/images/chicken-tikka-masala1-1663341991.jpg?crop=0.9057777777777778xw:1xh;center,top&resize=1200:*",
+    "calories": 480,
+    "nutrition_facts": {
+      "protein": "30g",
+      "carbohydrates": "35g",
+      "fat": "20g",
+      "fiber": "4g"
+    },
+    "allergens": [
+      "dairy"
+    ]
+  },
+  {
+    "id": 9,
+    "meal_name": "Mushroom Risotto",
+    "price": 10.99,
+    "imgUrl": "https://www.allrecipes.com/thmb/Pow6PE9UyushNDB4wutXNnmriX8=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/85389-gourmet-mushroom-risotto-86-7a2d218f53e94ccfaecc69b6fd93cab8.jpg",
+    "calories": 380,
+    "nutrition_facts": {
+      "protein": "10g",
+      "carbohydrates": "45g",
+      "fat": "15g",
+      "fiber": "5g"
+    },
+    "allergens": [
+      "dairy"
+    ]
+  },
+  {
+    "id": 10,
+    "meal_name": "Hawaiian Pizza",
+    "price": 13.49,
+    "imgUrl": "https://recipes.net/wp-content/uploads/2020/07/pizza-hut-sweet-hawaiian-pizza-recipe.jpg",
+    "calories": 520,
+    "nutrition_facts": {
+      "protein": "25g",
+      "carbohydrates": "55g",
+      "fat": "22g",
+      "fiber": "3g"
+    },
+    "allergens": [
+      "gluten",
+      "dairy"
+    ]
+  }
+]

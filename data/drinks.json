@@ -1,0 +1,145 @@
+[
+  {
+    "id": 1,
+    "drink_name": "Orange Juice",
+    "price": 2.99,
+    "imgUrl": "https://media-cldnry.s-nbcnews.com/image/upload/rockcms/2024-03/orange-juice-1-jp-240311-1e99ea.jpg",
+    "calories": 120,
+    "nutrition_facts": {
+      "sugar": "25g",
+      "vitamin_c": "100%",
+      "calcium": "2%"
+    },
+    "allergens": [
+      "none"
+    ]
+  },
+  {
+    "id": 2,
+    "drink_name": "Iced Coffee",
+    "price": 3.49,
+    "imgUrl": "https://www.allrecipes.com/thmb/Hqro0FNdnDEwDjrEoxhMfKdWfOY=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/21667-easy-iced-coffee-ddmfs-4x3-0093-7becf3932bd64ed7b594d46c02d0889f.jpg",
+    "calories": 150,
+    "nutrition_facts": {
+      "sugar": "20g",
+      "caffeine": "80mg"
+    },
+    "allergens": [
+      "none"
+    ]
+  },
+  {
+    "id": 3,
+    "drink_name": "Green Tea",
+    "price": 1.99,
+    "imgUrl": "https://assets.rbl.ms/19152954/origin.jpg",
+    "calories": 5,
+    "nutrition_facts": {
+      "sugar": "0g",
+      "antioxidants": "high"
+    },
+    "allergens": [
+      "none"
+    ]
+  },
+  {
+    "id": 4,
+    "drink_name": "Mango Smoothie",
+    "price": 4.99,
+    "imgUrl": "https://images.eatthismuch.com/img/927279_tabitharwheeler_0429baa1-435d-4689-b5f9-382a6040fe09.jpg",
+    "calories": 250,
+    "nutrition_facts": {
+      "sugar": "30g",
+      "vitamin_a": "50%",
+      "vitamin_c": "60%"
+    },
+    "allergens": [
+      "none"
+    ]
+  },
+  {
+    "id": 5,
+    "drink_name": "Coconut Water",
+    "price": 2.49,
+    "imgUrl": "https://images.healthshots.com/healthshots/en/uploads/2023/09/20075617/coconut-water-3.jpg",
+    "calories": 60,
+    "nutrition_facts": {
+      "sugar": "6g",
+      "potassium": "15%",
+      "sodium": "2%"
+    },
+    "allergens": [
+      "none"
+    ]
+  },
+  {
+    "id": 6,
+    "drink_name": "Lemonade",
+    "price": 1.99,
+    "imgUrl": "https://www.simplyrecipes.com/thmb/4LFrc9hSMoKErr2WI7tThcnvWwA=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Simply-Recipes-Perfect-Lemonade-LEAD-08-B-441ceb568f854bb485dbed79e082bb4a.jpg",
+    "calories": 100,
+    "nutrition_facts": {
+      "sugar": "25g",
+      "vitamin_c": "70%"
+    },
+    "allergens": [
+      "none"
+    ]
+  },
+  {
+    "id": 7,
+    "drink_name": "Cranberry Juice",
+    "price": 3.99,
+    "imgUrl": "https://fooddrinklife.com/wp-content/uploads/2023/02/Cranberries-59.jpg",
+    "calories": 140,
+    "nutrition_facts": {
+      "sugar": "30g",
+      "vitamin_c": "100%"
+    },
+    "allergens": [
+      "none"
+    ]
+  },
+  {
+    "id": 8,
+    "drink_name": "Peach Iced Tea",
+    "price": 2.79,
+    "imgUrl": "https://static.toiimg.com/thumb/84818808.cms?width=1200&height=900",
+    "calories": 80,
+    "nutrition_facts": {
+      "sugar": "18g",
+      "vitamin_c": "50%"
+    },
+    "allergens": [
+      "none"
+    ]
+  },
+  {
+    "id": 9,
+    "drink_name": "Pineapple Juice",
+    "price": 2.99,
+    "imgUrl": "https://post.healthline.com/wp-content/uploads/2021/04/pineapple-juice-1296x728-header-.jpg",
+    "calories": 110,
+    "nutrition_facts": {
+      "sugar": "28g",
+      "vitamin_c": "80%"
+    },
+    "allergens": [
+      "none"
+    ]
+  },
+  {
+    "id": 10,
+    "drink_name": "Watermelon Juice",
+    "price": 3.49,
+    "imgUrl": "https://cdn.loveandlemons.com/wp-content/uploads/2021/06/watermelon-juice.jpg",
+    "calories": 90,
+    "nutrition_facts": {
+      "sugar": "20g",
+      "vitamin_c": "60%"
+    },
+    "allergens": [
+      "none"
+    ]
+  }
+]

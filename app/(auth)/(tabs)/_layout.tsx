@@ -8,7 +8,7 @@ const Layout = () => {
   return (
     <Tabs
       screenOptions={{
-        tabBarStyle: { paddingBottom: 5, paddingTop: 5, flexDirection: 'row' },
+        tabBarStyle: { paddingBottom: 5, paddingTop: 5, flexDirection: 'row', height: 55 },
         tabBarActiveTintColor: Colors.dark,
         tabBarLabelStyle: {
           fontFamily: 'lato-sb',

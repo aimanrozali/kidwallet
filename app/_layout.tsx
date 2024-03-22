@@ -2,7 +2,7 @@ import AuthProvider from '@/context/AuthProvider';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, Tabs } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 
@@ -55,6 +55,11 @@ function RootLayoutNav() {
         <Stack.Screen name='(public)/WelcomeScreen' options={{ headerShown: false }} />
         <Stack.Screen name='(public)/Login' options={{ headerShown: false }} />
         <Stack.Screen name='(auth)/(tabs)' options={{ headerShown: false }} />
+        <Stack.Screen name='(auth)/ewallet/[ewalletID]' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
+        <Stack.Screen name='(auth)/orderMeals/orderedList' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
+        <Stack.Screen name='(auth)/orderMeals/mealsList' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
+        <Stack.Screen name='(auth)/orderMeals/[mealID]' options={{ headerTitle: '', headerTransparent: true }} />
+        <Stack.Screen name='(auth)/orderMeals/viewCart' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
       </Stack>
     </AuthProvider>
   );

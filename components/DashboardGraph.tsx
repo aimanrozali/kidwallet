@@ -7,15 +7,14 @@ import { defaultStyles } from '@/constants/Styles'
 const DashboardGraph = () => {
   return (
 
-    <View style={{ paddingTop: 10 }}>
+    <View style={{ padding: 10 }}>
       <View>
         <LineChart
           data={{
-            labels: ["January", "February", "March", "April", "May", "June"],
+            labels: ["January", "February", "March", "April", "May"],
             datasets: [
               {
                 data: [
-                  Math.random() * 100,
                   Math.random() * 100,
                   Math.random() * 100,
                   Math.random() * 100,
@@ -25,7 +24,7 @@ const DashboardGraph = () => {
               }
             ]
           }}
-          width={Dimensions.get("window").width} // from react-native
+          width={(Dimensions.get("window").width) - 20} // from react-native
           height={220}
           yAxisLabel="$"
           yAxisSuffix="k"
