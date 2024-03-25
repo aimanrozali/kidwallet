@@ -1,25 +1,47 @@
 import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, Alert, ScrollView } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { defaultStyles } from '@/constants/Styles'
 import { Ionicons } from '@expo/vector-icons'
-import { useAuth } from '@/context/AuthProvider'
+import { useAuth } from '@/context/AuthContext'
+import axios from 'axios'
+import { API_URL } from '@/config'
+import { router } from 'expo-router'
+import safeStringify from 'safe-stringify';
 
 const Login = () => {
 
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { login } = useAuth();
+  const { onLogin } = useAuth();
 
-  const _login = (username: string, password: string) => {
-    if (username === "" || password === "") {
-      Alert.alert("Please enter username and password");
-    }
-    else {
-      login(username, password);
-    }
-  };
+  const login = async () => {
+    await onLogin!(email, password);
+    // if (result.data.status) {
+    //   alert(result.message)
+    // }
+    //console.log("RESULT::", result.data.token);
+  }
+
+  // const testConn = async () => {
+  //   try {
+  //     const result = await axios.get(`${API_URL}/Auth/test`);
+  //     console.log(result.data.data);
+  //   }
+  //   catch (e) {
+  //     console.error(e);
+  //   }
+
+  // }
+
+  // useEffect(() => {
+  //   const testCall = async () => {
+  //     const result = await axios.get(`${API_URL}/`)
+  //   }
+  // })
+
+
 
   return (
     <SafeAreaView style={{ backgroundColor: '#fff', flex: 1 }}>
@@ -45,8 +67,8 @@ const Login = () => {
               placeholder='Enter your email'
               keyboardType='email-address'
               style={[defaultStyles.inputField, { marginBottom: 20, marginHorizontal: 20 }]}
-              value={username}
-              onChangeText={setUsername}
+              value={email}
+              onChangeText={setEmail}
             />
 
             <Text style={{ paddingBottom: 10, marginLeft: 15 }}>Password</Text>
@@ -59,7 +81,7 @@ const Login = () => {
 
             <TouchableOpacity
               style={[defaultStyles.btn, { marginHorizontal: 40, marginTop: 10 }]}
-              onPress={() => _login(username, password)}
+              onPress={login}
             >
               <Text style={defaultStyles.btnText}>Login</Text>
             </TouchableOpacity>
@@ -68,7 +90,7 @@ const Login = () => {
 
         <View style={{ flexDirection: 'row', justifyContent: 'space-around', paddingTop: 10 }}>
           <Text style={{ fontFamily: 'lato-light', fontSize: 13 }}>Don't have an account?</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.navigate('SignUp')}>
             <Text style={{ fontFamily: 'lato-bold', fontSize: 13 }}>Sign Up</Text>
           </TouchableOpacity>
         </View>

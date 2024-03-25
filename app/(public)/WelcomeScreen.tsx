@@ -27,7 +27,9 @@ const WelcomeScreen = () => {
             style={[defaultStyles.btnOutline, { paddingHorizontal: 40 }]}>
             <Text style={defaultStyles.btnText}>Login</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[defaultStyles.btn, { paddingHorizontal: 40 }]}>
+          <TouchableOpacity
+            style={[defaultStyles.btn, { paddingHorizontal: 40 }]}
+            onPress={() => router.navigate("SignUp")}>
             <Text style={defaultStyles.btnText}>Sign Up</Text>
           </TouchableOpacity>
         </View>
