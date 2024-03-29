@@ -65,6 +65,11 @@ function RootLayoutNav() {
       <Stack.Screen name='(auth)/orderMeals/mealsList' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
       <Stack.Screen name='(auth)/orderMeals/[mealID]' options={{ headerTitle: '', headerTransparent: true }} />
       <Stack.Screen name='(auth)/orderMeals/viewCart' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
+      <Stack.Screen name='(auth)/profile/editProfile' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
+      <Stack.Screen name='(auth)/profile/manageChildren' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
+      <Stack.Screen name='(auth)/profile/changePassword' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
+      <Stack.Screen name='(auth)/profile/editChildren' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
+      <Stack.Screen name='(auth)/profile/addChildren' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
     </Stack>
   );
 }

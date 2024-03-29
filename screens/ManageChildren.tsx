@@ -1,12 +1,12 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Ionicons } from '@expo/vector-icons'
-import { useRouter } from 'expo-router'
-import { Student } from '@/interfaces/student'
-import { API_URL } from '@/config'
-import axios from 'axios'
+import { Student } from '@/interfaces/student';
+import { API_URL } from '@/config';
+import axios from 'axios';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
-const MealsPreOrder = () => {
+const ManageChildren = () => {
 
   const [studentData, setStudentData] = useState<Student[] | null>(null);
 
@@ -39,7 +39,7 @@ const MealsPreOrder = () => {
         <TouchableOpacity onPress={() => router.back()} >
           <Ionicons name='chevron-back' size={30} />
         </TouchableOpacity>
-        <Text style={styles.headerText}>Meals Pre-Order</Text>
+        <Text style={styles.headerText}>Manage Children</Text>
       </View>
 
       <View style={{ paddingTop: 20 }}>
@@ -48,7 +48,7 @@ const MealsPreOrder = () => {
 
             {studentData?.map((item, index) => (
               <TouchableOpacity style={[styles.card, {}]}
-                onPress={() => router.navigate('(auth)/orderMeals/orderedList?id=' + item.studentID)}
+                onPress={() => router.navigate(`(auth)/profile/editChildren?id=${item.studentID}`)}
                 key={index}>
                 <View style={styles.cardInnerContainer}>
                   <Text style={{ fontFamily: 'lato-bold', fontSize: 13 }}>{item.studentName}</Text>
@@ -69,7 +69,7 @@ const MealsPreOrder = () => {
   )
 }
 
-export default MealsPreOrder
+export default ManageChildren
 
 const styles = StyleSheet.create({
   header: {

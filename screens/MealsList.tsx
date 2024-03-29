@@ -1,18 +1,72 @@
-import { View, Text, StyleSheet, TouchableOpacity, Touchable, ScrollView, Image } from 'react-native'
-import React, { useMemo, useState } from 'react'
+import { View, Text, StyleSheet, TouchableOpacity, Touchable, ScrollView, Image, ActivityIndicator } from 'react-native'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'expo-router'
 import { FontAwesome5, Fontisto, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { defaultStyles } from '@/constants/Styles';
 import Colors from '@/constants/Colors';
 import MealPage from '@/app/(auth)/orderMeals/[mealID]';
 import { Drinks } from '@/interfaces/drinks';
+import { Meals } from '@/interfaces/meals';
+import { API_URL } from '@/config';
+import axios from 'axios';
 
 interface Props {
-  meals: any[];
-  drinks: Drinks[];
+  name: string,
+  id: string
 }
 
-const MealsList = ({ meals, drinks }: Props) => {
+const MealsList = ({ name, id }: Props) => {
+
+
+  const [meal, setMeal] = useState<Meals[] | null>(null);
+  const [drink, setDrink] = useState<Meals[] | null>(null);
+  const [loadedMeal, setLoadedMeal] = useState(false);
+  const [loadedDrink, setLoadedDrink] = useState(false);
+
+  //console.log("At MealList::", name);
+
+  useEffect(() => {
+    const url = `${API_URL}/api/Meal/GetAllFood`;
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(url);
+        const responseJson = response.data.data;
+        setMeal(responseJson);
+
+        console.log("At Meal:", responseJson); // Log the updated value here
+        setLoadedMeal(true);
+
+      } catch (err) {
+        console.error("At Meal", err);
+        setLoadedMeal(false);
+      }
+    }
+
+    fetchData();
+
+  }, []);
+
+  useEffect(() => {
+    const urlDrink = `${API_URL}/api/Meal/GetAllDrinks`;
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(urlDrink);
+        const responseJson = response.data.data;
+        setDrink(responseJson);
+
+        console.log("At Drink:", responseJson); // Log the updated value here
+        setLoadedDrink(true);
+
+      } catch (err) {
+        console.error("At Drink", err);
+      }
+    }
+
+    fetchData();
+
+  }, []);
 
 
 
@@ -31,7 +85,7 @@ const MealsList = ({ meals, drinks }: Props) => {
         </TouchableOpacity>
         <View>
           <Text style={styles.headerText}>Order Meals for</Text>
-          <Text style={styles.headerText}>Abdul Zakwan</Text>
+          <Text style={styles.headerText}>{name}</Text>
         </View>
       </View>
 
@@ -50,34 +104,39 @@ const MealsList = ({ meals, drinks }: Props) => {
       <View style={{}}>
         <Text style={styles.mealsHeaderTxt}>Food</Text>
         <View style={styles.card}>
-          <ScrollView style={[styles.scrollViewStyle]}
-          >
-            {meals.map((item, index) => (
-              <View key={index} style={styles.innerScroll}>
+          {loadedMeal && meal ? (
+            <ScrollView style={[styles.scrollViewStyle]}
+            >
 
-                <View style={{ flexDirection: 'row', gap: 20, alignItems: 'center' }} key={index}>
-                  {/* <Ionicons name="fast-food" size={30} /> */}
-                  <Image source={{ uri: item.imgUrl }} style={styles.smallImage} />
+              {meal?.map((item, index) => (
+                <View key={index} style={styles.innerScroll}>
 
-                  <View style={{ gap: 2 }}>
-                    <Text style={styles.mealsNameTxt}>{item.meal_name}</Text>
-                    <View style={{ flexDirection: 'row', gap: 50 }}>
-                      <Text style={styles.priceTxt}>RM{item.price}</Text>
-                      <Text style={styles.caloriesTxt}>{item.calories}kcal</Text>
+                  <View style={{ flexDirection: 'row', gap: 20, alignItems: 'center' }} key={index}>
+                    {/* <Ionicons name="fast-food" size={30} /> */}
+                    <Image source={{ uri: item.mealPic }} style={styles.smallImage} />
+
+                    <View style={{ gap: 2 }}>
+                      <Text style={styles.mealsNameTxt}>{item.mealName}</Text>
+                      <View style={{ flexDirection: 'row', gap: 50 }}>
+                        <Text style={styles.priceTxt}>RM{item.price.toFixed(2)}</Text>
+                        <Text style={styles.caloriesTxt}>{item.calories}kcal</Text>
+                      </View>
                     </View>
+
                   </View>
 
+                  <View>
+                    <TouchableOpacity key={index}>
+                      <Ionicons name="add-circle" size={24} color={Colors.primary}
+                        onPress={() => router.push(`/(auth)/orderMeals/${item.mealID}?type=${0}`)} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
+              ))}
+            </ScrollView>
+          ) : (<ActivityIndicator />
+          )}
 
-                <View>
-                  <TouchableOpacity key={index}>
-                    <Ionicons name="add-circle" size={24} color={Colors.primary}
-                      onPress={() => router.push(`/(auth)/orderMeals/${item.id}?type=${0}`)} />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            ))}
-          </ScrollView>
         </View>
       </View>
 
@@ -87,14 +146,14 @@ const MealsList = ({ meals, drinks }: Props) => {
         <View style={styles.card}>
           <ScrollView style={[styles.scrollViewStyle]}
           >
-            {drinks.map((item, index) => (
+            {drink?.map((item, index) => (
               <View key={index} style={styles.innerScroll}>
                 <View style={{ flexDirection: 'row', gap: 20, alignItems: 'center' }} key={index}>
-                  <Image source={{ uri: item.imgUrl }} style={styles.smallImage} />
+                  <Image source={{ uri: item.mealPic }} style={styles.smallImage} />
                   <View>
-                    <Text style={styles.mealsNameTxt}>{item.drink_name}</Text>
+                    <Text style={styles.mealsNameTxt}>{item.mealName}</Text>
                     <View style={{ flexDirection: 'row', gap: 50 }}>
-                      <Text style={styles.priceTxt}>RM{item.price}</Text>
+                      <Text style={styles.priceTxt}>RM{item.price.toFixed(2)}</Text>
                       <Text style={styles.caloriesTxt}>{item.calories}kcal</Text>
                     </View>
                   </View>
@@ -102,7 +161,7 @@ const MealsList = ({ meals, drinks }: Props) => {
                 <View>
                   <TouchableOpacity key={index}>
                     <Ionicons name="add-circle" size={24} color={Colors.primary}
-                      onPress={() => router.push(`/(auth)/orderMeals/${item.id}`)} />
+                      onPress={() => router.push(`/(auth)/orderMeals/${item.mealID}`)} />
                   </TouchableOpacity>
                 </View>
               </View>

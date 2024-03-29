@@ -1,13 +1,45 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native'
-import React, { useLayoutEffect } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Tabs, useNavigation, useRouter } from 'expo-router'
+import { Tabs, useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
 import { Entypo, FontAwesome5, FontAwesome6, Ionicons } from '@expo/vector-icons'
 import Colors from '@/constants/Colors'
+import { API_URL } from '@/config'
+import axios from 'axios'
+import { Student, Wallet } from '@/interfaces/student'
 
 const WalletPage = () => {
 
   const router = useRouter();
+
+  const [walletData, setWalletData] = useState<Student | null>(null);
+
+  const { ewalletID } = useLocalSearchParams<{ ewalletID: string }>();
+
+  useEffect(() => {
+    const url = `${API_URL}/api/Student`;
+    console.log(url + `/${ewalletID}`);
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(url + `/${ewalletID}`);
+        const responseJson = response.data.data;
+        setWalletData(responseJson);
+
+        console.log("At Wallet:", responseJson); // Log the updated value here
+
+      } catch (err) {
+        console.error("At Wallet", err);
+      }
+    }
+
+    fetchData();
+
+  }, []);
+
+  // const data = (walletData as Wallet).find((item: { WalletID: string }) => item.WalletID === ewalletID)
+
+  // console.log(data);
 
   // Get Today's full date and day
   let todayDate = new Date()
@@ -31,13 +63,13 @@ const WalletPage = () => {
         {/* Wallet Header */}
         <View style={styles.textContainer}>
           <Text style={{ fontFamily: 'lato-bold', fontSize: 15 }}>
-            Abdul Zakwan
+            {walletData?.studentName}
           </Text>
           <Text style={{ fontFamily: 'lato-sb', fontSize: 12 }}>
             Total Balance
           </Text>
           <Text style={{ fontFamily: 'lato-black', fontSize: 25 }}>
-            RM24.00
+            RM{walletData?.wallet.walletBalance.toFixed(2)}
           </Text>
         </View>
 
@@ -52,7 +84,7 @@ const WalletPage = () => {
           </TouchableOpacity>
           <TouchableOpacity style={styles.btn}>
             <Entypo name="dots-three-horizontal" size={40} />
-            <Text style={styles.btnText}>Add Funds</Text>
+            <Text style={styles.btnText}>More</Text>
           </TouchableOpacity>
         </View>
 
@@ -60,7 +92,7 @@ const WalletPage = () => {
         <View style={[styles.card, { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, paddingHorizontal: 15, alignItems: 'center' }]}>
           <View>
             <Text style={{ fontFamily: 'lato-bold', fontSize: 15 }}>Current Daily Spending Threshold</Text>
-            <Text style={{ fontFamily: 'lato-black', fontSize: 18, paddingVertical: 5 }}>RM8.00</Text>
+            <Text style={{ fontFamily: 'lato-black', fontSize: 18, paddingVertical: 5 }}>RM{walletData?.wallet.dailySpendingLimit.toFixed(2)}</Text>
             <Text style={{ fontFamily: 'lato-sb', fontSize: 13, color: Colors.grey }}>RM4.00 Spent Today</Text>
           </View>
           <TouchableOpacity style={{ alignItems: 'center', gap: 5 }}>

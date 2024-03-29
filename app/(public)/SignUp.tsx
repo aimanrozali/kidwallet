@@ -1,12 +1,27 @@
-import { View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Keyboard, TextInput } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Keyboard, TextInput, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { defaultStyles } from '@/constants/Styles'
 import { useAuth } from '@/context/AuthContext'
+import * as yup from 'yup'
 
 const signUp = () => {
+
+  const loginValidationSchema = yup.object().shape({
+    email: yup
+      .string()
+      .email("Please enter valid email")
+      .required('Email Address is Required'),
+    password: yup
+      .string()
+      .min(8, ({ min }) => `Password must be at least ${min} characters`)
+      .required('Password is required'),
+    phoneNumber: yup
+      .number()
+      .min(10, ({ min }) => `Phone number must be at least ${min} number`),
+  })
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,10 +33,15 @@ const signUp = () => {
 
   const register = async () => {
     try {
+      await loginValidationSchema.validate({ email, password, phoneNumber });
       const result = onRegister!(email, password, userName, phoneNumber);
       console.log(result);
+      // If the registration is successful, navigate to the login page
+      alert("Registration Successful")
+      router.push("/Login");
     }
     catch (e) {
+      Alert.alert('Email must be valid and password must be at least 8 characters');
       console.error("Error on SignUp.tsx", e);
     }
   }

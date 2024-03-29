@@ -2,6 +2,7 @@ import { View, Text, Touchable, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '@/context/AuthContext'
+import Profile from '@/screens/Profile'
 
 const profile = () => {
 
@@ -14,11 +15,14 @@ const profile = () => {
 
   return (
     <SafeAreaView>
+      <Profile />
+      {/*
       <View>
-        <TouchableOpacity onPress={onLogout}>
+        <Text>My Profile</Text>
+         <TouchableOpacity onPress={onLogout}>
           <Text>Log Out</Text>
-        </TouchableOpacity>
-      </View>
+        </TouchableOpacity> 
+      </View>*/}
     </SafeAreaView>
   )
 }

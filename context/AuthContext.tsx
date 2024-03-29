@@ -2,7 +2,6 @@ import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import * as SecureStore from 'expo-secure-store';
 import { API_URL } from "@/config";
-import safeStringify from 'safe-stringify';
 import { useRouter, useSegments } from "expo-router";
 
 interface AuthProps {
@@ -35,7 +34,7 @@ export const AuthProvider = ({ children }: any) => {
     const loadToken = async () => {
       const token = await SecureStore.getItemAsync(TOKEN_KEY);
 
-      console.log("TOKENNN:::", token);
+      //console.log("TOKENNN:::", token);
 
       if (token) {
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -45,28 +44,56 @@ export const AuthProvider = ({ children }: any) => {
         });
       }
 
-      console.log(authState);
+      //console.log(authState);
 
     };
     loadToken();
   }, []);
 
 
+  // const register = async (email: string, password: string, userName: string, phoneNumber: string) => {
+  //   try {
+  //     var result;
+  //     // return await axios.post(`${API_URL}/Auth/Register`, { email, password, userName, phoneNumber })
+  //     await axios.post(`${API_URL}/Auth/Register`, { email, password, userName, phoneNumber }, {
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       }
+  //     }).then((res) => {
+  //       alert("Registered Successfully!")
+  //       result = res;
+
+  //       router.push("/Login")
+  //     })
+  //       .catch((err) => {
+  //         console.error(err);
+  //       });
+  //     return result;
+  //   } catch (e) {
+  //     return { error: true, msg: (e as any).response.data.message };
+  //   }
+  // };
+
   const register = async (email: string, password: string, userName: string, phoneNumber: string) => {
     try {
-      // return await axios.post(`${API_URL}/Auth/Register`, { email, password, userName, phoneNumber })
-      await axios.post(`${API_URL}/Auth/Register`, { email, password, userName, phoneNumber }, {
+      // Send POST request
+      const response = await axios.post(`${API_URL}/Auth/Register`, { email, password, userName, phoneNumber }, {
         headers: {
           'Content-Type': 'application/json'
         }
-      }).then((res) => {
-        console.log(res.data);
-      })
-        .catch((err) => {
-          console.error(err);
-        });
-    } catch (e) {
-      return { error: true, msg: (e as any).response.data.message };
+      });
+
+      // If request is successful, show alert and redirect
+      console.log("SignUp")
+      alert("Registered Successfully!");
+      router.push("/Login");
+
+      // Return response
+      return response;
+    } catch (error) {
+      // If there's an error, log it and return error message
+      console.error(error);
+      return { error: true };
     }
   };
 
@@ -81,18 +108,18 @@ export const AuthProvider = ({ children }: any) => {
           token: res.data.token,
           authenticated: true
         })
-        console.log(res.data);
+        //console.log(res.data);
         axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
 
-        console.log("Before Store")
+        //console.log("Before Store")
         await SecureStore.setItemAsync(TOKEN_KEY, res.data.token);
-        console.log("After store")
+        //console.log("After store")
 
       }))
       .catch((err) => {
         console.error(err);
       });
-    console.log(authState);
+    //console.log(authState);
     //console.log("Header", axios.defaults.headers.common['Authorization'])
 
     // setAuthState({
@@ -116,7 +143,8 @@ export const AuthProvider = ({ children }: any) => {
       token: null,
       authenticated: false,
     })
-    console.log("LOGOUT::", authState)
+    alert("Logged Out");
+    //console.log("LOGOUT::", authState)
 
     const token = await SecureStore.getItemAsync(TOKEN_KEY);
     console.log(token);

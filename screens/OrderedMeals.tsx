@@ -1,11 +1,42 @@
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
-import React from 'react'
-import { useRouter } from 'expo-router'
+import React, { useEffect, useState } from 'react'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { defaultStyles } from '@/constants/Styles';
+import { Student } from '@/interfaces/student';
+import { API_URL } from '@/config';
+import axios from 'axios';
 
 const OrderedMeals = () => {
+
+  const [orderData, setOrderData] = useState<Student | null>(null);
+
+  const { id } = useLocalSearchParams<{ id: string }>();
+
+  console.log(id);
+
+  useEffect(() => {
+    const url = `${API_URL}/api/Student`;
+    console.log(url + `/${id}`);
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(url + `/${id}`);
+        const responseJson = response.data.data;
+        setOrderData(responseJson);
+
+        console.log("At OrderedMeals:", responseJson); // Log the updated value here
+
+      } catch (err) {
+        console.error("At OrderedMeals", err);
+      }
+    }
+
+    fetchData();
+
+  }, []);
+
 
   const router = useRouter();
   return (
@@ -17,7 +48,7 @@ const OrderedMeals = () => {
         </TouchableOpacity>
         <View>
           <Text style={styles.headerText}>Pre-Ordered Meals List for</Text>
-          <Text style={styles.headerText}>Abdul Zakwan</Text>
+          <Text style={styles.headerText}>{orderData?.studentName}</Text>
         </View>
       </View>
 
@@ -52,7 +83,7 @@ const OrderedMeals = () => {
       <View style={{ paddingTop: 20, alignItems: 'flex-end', paddingRight: 10 }}>
         <TouchableOpacity
           style={[defaultStyles.btn, { paddingHorizontal: 30 }]}
-          onPress={() => router.push('/(auth)/orderMeals/mealsList')}
+          onPress={() => router.push(`/(auth)/orderMeals/mealsList?id=${orderData?.studentID}&&name=${orderData?.studentName}`)}
         >
           <Text style={{ fontFamily: 'lato-bold' }}>Order Meals</Text>
         </TouchableOpacity>

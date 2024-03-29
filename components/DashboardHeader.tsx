@@ -1,8 +1,48 @@
 import { View, Text, Image, StyleSheet } from 'react-native'
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
+import { API_URL } from '@/config';
+import axios from 'axios';
+import { User } from '@/interfaces/user';
+import { Student } from '@/interfaces/student';
+import { useFocusEffect } from 'expo-router';
+
+interface UserData {
+  email: string;
+  userName: string;
+  phoneNumber: string;
+  profilePicture: string;
+  students: Student[];
+
+}
 
 const DashboardHeader = () => {
+
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const defaultProfilePic = "https://kidwallet-bucket.s3.ap-southeast-1.amazonaws.com/profilePictures/default.jpg";
+
+
+  useEffect(() => {
+    const url = `${API_URL}/api/User/GetInfo`;
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(url);
+        const responseJson = response.data.data;
+        setUserData(responseJson as UserData);
+        setLoading(false);
+        console.log("Header")
+
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    fetchData();
+  }, [])
+
   return (
     //Main container
     <View>
@@ -10,11 +50,11 @@ const DashboardHeader = () => {
 
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
           <Image
-            source={require('@/assets/images/black.png')}
+            source={{ uri: userData?.profilePicture }}
             style={styles.image} />
           <View style={{ alignContent: 'flex-start' }}>
             <Text style={{ fontFamily: 'lato-light', fontSize: 10 }}>Welcome back,</Text>
-            <Text style={{ fontFamily: 'lato-bold', paddingTop: 5 }}>Aiman Rozali</Text>
+            <Text style={{ fontFamily: 'lato-bold', paddingTop: 5 }}>{loading ? "loading..." : userData?.userName}</Text>
           </View>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
