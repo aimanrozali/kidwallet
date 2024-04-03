@@ -7,6 +7,8 @@ import { defaultStyles } from '@/constants/Styles'
 const DashboardGraph = () => {
   return (
 
+
+
     <View style={{ padding: 10 }}>
       <View>
         <LineChart

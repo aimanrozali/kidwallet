@@ -164,17 +164,16 @@ const EditChildren = () => {
               <Text>{allergy.join(', ')}</Text>
             </View> */}
             <SectionedMultiSelect
-              IconRenderer={MaterialIcons}
+              IconRenderer={MaterialIcons} // Provide the correct type for IconRenderer prop
               items={allergics}
               uniqueKey="value"
-              onSelectedItemsChange={setAllergens}
+              onSelectedItemsChange={(items: any[]) => setAllergens(items as never[])} // Update the type of setAllergens to accept an array of any type
               selectedItems={allergy}
               styles={{
                 container: styles.multiSelectContainer,
                 backdrop: styles.multiSelectBackdrop,
                 selectToggle: styles.multiSelectBox,
               }}
-
             />
             {/* <TextInput
               style={[defaultStyles.inputField, { marginBottom: 20, marginHorizontal: 20 }]}

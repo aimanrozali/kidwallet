@@ -1,16 +1,35 @@
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
 import React, { useLayoutEffect } from 'react'
-import { useNavigation, useRouter } from 'expo-router'
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { defaultStyles } from '@/constants/Styles';
 import Colors from '@/constants/Colors';
+import { useAppSelector, useAppDispatch } from '@/hooks/hooks';
+import { CartItem } from '@/hooks/CardReducer';
+import { RootState } from '@/store/store';
 
 const ViewCart = () => {
 
   const navigation = useNavigation();
   const router = useRouter();
+  const { id } = useLocalSearchParams<{ id: string }>();
 
 
+  // Get the cart items from Redux
+  const cart = useAppSelector((state: RootState) => state.cart.cart[id]);
+  const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+  // Assume a tax rate of 0%
+  const taxRate = 0;
+  // Calculate the tax amount
+  const tax = subtotal * taxRate;
+
+  // Calculate the total
+  const total = subtotal + tax;
+
+
+  console.log("CART::", cart)
+
+  console.log("CART::", cart)
   return (
     <View style={{ flex: 1 }}>
       <View style={{ paddingHorizontal: 10 }}>
@@ -64,25 +83,27 @@ const ViewCart = () => {
               Order Summary
             </Text>
             <View style={[styles.cardOrder, { paddingVertical: 10, paddingHorizontal: 15 }]}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10 }}>
-                <View style={{ flexDirection: 'row', gap: 20 }}>
-                  <Text>x1</Text>
-                  <Text>Chicken Rice</Text>
+              {cart.map((item: CartItem) => (
+                <View key={item.mealID} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10 }}>
+                  <View style={{ flexDirection: 'row', gap: 20 }}>
+                    <Text>{item.quantity}</Text>
+                    <Text>{item.mealName}</Text>
+                  </View>
+                  <Text>RM{(item.price * item.quantity).toFixed(2)}</Text>
                 </View>
-                <Text>RM4.00</Text>
-              </View>
+              ))}
               <View style={{ borderWidth: StyleSheet.hairlineWidth }} />
 
               {/* Subtotal */}
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 10 }}>
                 <Text>Subtotal</Text>
-                <Text>RM6.50</Text>
+                <Text>RM{subtotal.toFixed(2)}</Text>
               </View>
 
               {/* Tax */}
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 10 }}>
                 <Text>Tax</Text>
-                <Text>RM6.50</Text>
+                <Text>RM{tax.toFixed(2)}</Text>
               </View>
 
             </View>

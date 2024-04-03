@@ -6,6 +6,7 @@ import axios from 'axios';
 import { User } from '@/interfaces/user';
 import { Student } from '@/interfaces/student';
 import { useFocusEffect } from 'expo-router';
+import { useAuth } from '@/context/AuthContext';
 
 interface UserData {
   email: string;
@@ -17,6 +18,8 @@ interface UserData {
 }
 
 const DashboardHeader = () => {
+
+  const { authState } = useAuth();
 
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -40,8 +43,10 @@ const DashboardHeader = () => {
       }
     }
 
-    fetchData();
-  }, [])
+    if (authState?.authenticated) {
+      fetchData();
+    }
+  }, [authState?.authenticated])
 
   return (
     //Main container
@@ -50,7 +55,7 @@ const DashboardHeader = () => {
 
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
           <Image
-            source={{ uri: userData?.profilePicture }}
+            source={{ uri: userData?.profilePicture ? userData?.profilePicture : "https://avatar.iran.liara.run/public" }}
             style={styles.image} />
           <View style={{ alignContent: 'flex-start' }}>
             <Text style={{ fontFamily: 'lato-light', fontSize: 10 }}>Welcome back,</Text>

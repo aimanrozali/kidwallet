@@ -1,10 +1,12 @@
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { store } from '@/store/store';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack, Tabs } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { Provider } from 'react-redux';
 
 
 export {
@@ -45,7 +47,9 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <RootLayoutNav />
+      <Provider store={store}>
+        <RootLayoutNav />
+      </Provider>
     </AuthProvider>
   );
 }

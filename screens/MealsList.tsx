@@ -9,6 +9,7 @@ import { Drinks } from '@/interfaces/drinks';
 import { Meals } from '@/interfaces/meals';
 import { API_URL } from '@/config';
 import axios from 'axios';
+import DatePicker from 'react-native-date-picker';
 
 interface Props {
   name: string,
@@ -74,6 +75,8 @@ const MealsList = ({ name, id }: Props) => {
   var today = todayDate.toLocaleDateString("en-MY", { month: 'numeric', year: 'numeric', day: 'numeric' });
   const [typeOrder, setTypeOrder] = useState(0); //0 for meal, 1 for drinks
   const router = useRouter();
+  const [date, setDate] = useState(new Date());
+  const [open, setOpen] = useState(false);
 
 
   return (
@@ -94,10 +97,29 @@ const MealsList = ({ name, id }: Props) => {
         <Text style={{ fontFamily: 'lato-bold', fontSize: 13 }}>
           Order For
         </Text>
-        <TouchableOpacity style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
+        <TouchableOpacity
+          onPress={() => setOpen(true)}
+          style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
           <MaterialCommunityIcons name="calendar-blank" size={25} />
-          <Text style={{ fontFamily: 'lato-black', fontSize: 18 }}>{today}</Text>
+          <Text style={{ fontFamily: 'lato-black', fontSize: 18 }}>
+            {date.toLocaleDateString("en-MY", { month: 'numeric', year: 'numeric', day: 'numeric' })}
+          </Text>
         </TouchableOpacity>
+        <DatePicker
+          modal
+          mode='date'
+          locale='en-MY'
+          open={open}
+          date={date}
+          minimumDate={todayDate}
+          onConfirm={(date) => {
+            setDate(date)
+            setOpen(false)
+          }}
+          onCancel={() => {
+            setOpen(false)
+          }}
+        />
       </View>
 
       {/* Food Card */}
@@ -128,7 +150,7 @@ const MealsList = ({ name, id }: Props) => {
                   <View>
                     <TouchableOpacity key={index}>
                       <Ionicons name="add-circle" size={24} color={Colors.primary}
-                        onPress={() => router.push(`/(auth)/orderMeals/${item.mealID}?type=${0}`)} />
+                        onPress={() => router.push(`/(auth)/orderMeals/${item.mealID}?type=${0}&id=${id}`)} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -161,7 +183,7 @@ const MealsList = ({ name, id }: Props) => {
                 <View>
                   <TouchableOpacity key={index}>
                     <Ionicons name="add-circle" size={24} color={Colors.primary}
-                      onPress={() => router.push(`/(auth)/orderMeals/${item.mealID}`)} />
+                      onPress={() => router.push(`/(auth)/orderMeals/${item.mealID}?id=${id}`)} />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -174,7 +196,7 @@ const MealsList = ({ name, id }: Props) => {
       <View style={styles.cartBtn}>
         <TouchableOpacity
           style={[styles.btn, { flexDirection: 'row' }]}
-          onPress={() => router.push('/(auth)/orderMeals/viewCart')}>
+          onPress={() => router.push(`/(auth)/orderMeals/viewCart?id=${id}`)}>
           <FontAwesome5 name="shopping-basket" size={24} color='black' />
           <Text style={{ fontFamily: 'lato-bold', fontSize: 13, padding: 10 }}>View Cart</Text>
         </TouchableOpacity>

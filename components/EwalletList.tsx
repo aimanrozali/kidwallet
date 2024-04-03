@@ -6,9 +6,12 @@ import { Link, useRouter } from 'expo-router'
 import { API_URL } from '@/config'
 import axios from 'axios'
 import { Student } from '@/interfaces/student'
+import { useAuth } from '@/context/AuthContext'
 
 
 const EwalletList = () => {
+
+  const { authState } = useAuth();
 
   const [studentData, setStudentData] = useState<Student[] | null>(null);
 
@@ -24,13 +27,14 @@ const EwalletList = () => {
         console.log(responseJson); // Log the updated value here
 
       } catch (err) {
-        console.error("At Student", err);
+        //console.error("At Student", err);
       }
     }
+    if (authState?.authenticated) {
+      fetchData();
+    }
 
-    fetchData();
-
-  }, []);
+  }, [authState?.authenticated]);
 
 
   const router = useRouter();

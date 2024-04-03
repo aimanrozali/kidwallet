@@ -11,15 +11,26 @@ import { defaultStyles } from '@/constants/Styles';
 import { Drinks } from '@/interfaces/drinks';
 import { API_URL } from '@/config';
 import axios from 'axios';
+import { useAppSelector, useAppDispatch } from '@/hooks/hooks';
+import { addToCart, CartItem, decrementQuantity, incrementQuantity, removeFromCart, selectQuantityById } from '@/hooks/CardReducer';
+import { RootState } from '@/store/store';
 
 const IMG_HEIGHT = 200;
 const { width } = Dimensions.get('window');
 
 const MealPage = () => {
 
+
+  //Redux
+  const dispatch = useAppDispatch();
+  const [count, setCount] = useState(0);
+  const cart = useAppSelector(state => state.cart);
+  console.log(JSON.stringify(cart));
+
   //console.log(useLocalSearchParams<{ type: string }>())
   const { type } = useLocalSearchParams<{ type: string }>();
   const { mealID } = useLocalSearchParams<{ mealID: string }>();
+  const { id } = useLocalSearchParams<{ id: string }>();
   const navigation = useNavigation();
   const router = useRouter();
   const [data, setData] = useState<Meals | null>(null);
@@ -55,6 +66,26 @@ const MealPage = () => {
       )
     })
   })
+
+  const counterMeals = useAppSelector((state: RootState) => selectQuantityById(parseInt(mealID), id)(state.cart));
+
+  const addItemToCart = (item: CartItem) => {
+    dispatch(addToCart({ studentID: id, ...item }));
+  };
+  const removeItemFromCart = (item: CartItem) => {
+    dispatch(removeFromCart(item));
+  };
+  const increaseQuantity = (item: CartItem) => {
+    dispatch(incrementQuantity(item));
+  }
+  const decreaseQuantity = (item: CartItem) => {
+    if (item.quantity == 1) {
+      dispatch(removeFromCart({ studentID: id, ...item }));
+    } else {
+      dispatch(decrementQuantity({ studentID: id, ...item }));
+    }
+  }
+
 
   const renderFood = (type: string, meal: Meals) => {
     if (type === "0") {
@@ -109,11 +140,13 @@ const MealPage = () => {
           <View style={styles.footer}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <View style={{ flexDirection: 'row', alignContent: 'center', gap: 10 }}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => decreaseQuantity(meal as any)} >
                   <Ionicons name="remove-circle-outline" size={30} />
                 </TouchableOpacity>
-                <Text style={{ textAlignVertical: 'center' }}>1</Text>
-                <TouchableOpacity>
+                {/* show quantity */}
+                <Text style={{ textAlignVertical: 'center' }}>{counterMeals}</Text>
+                {/* <Text style={{ textAlignVertical: 'center' }}>1</Text> */}
+                <TouchableOpacity onPress={() => addItemToCart(meal as any)} >
                   <Ionicons name='add-circle-outline' size={30} />
                 </TouchableOpacity>
               </View>
@@ -168,11 +201,12 @@ const MealPage = () => {
           <View style={styles.footer}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <View style={{ flexDirection: 'row', alignContent: 'center', gap: 10 }}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => decreaseQuantity(meal as any)}>
                   <Ionicons name="remove-circle-outline" size={30} />
-                </TouchableOpacity>
-                <Text style={{ textAlignVertical: 'center' }}>1</Text>
-                <TouchableOpacity>
+                </TouchableOpacity >
+                {/* show quantity */}
+                <Text style={{ textAlignVertical: 'center' }}>{counterMeals}</Text>
+                <TouchableOpacity onPress={() => addItemToCart(meal as any)}>
                   <Ionicons name='add-circle-outline' size={30} />
                 </TouchableOpacity>
               </View>

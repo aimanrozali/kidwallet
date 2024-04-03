@@ -60,7 +60,7 @@ const Profile = () => {
       {/* Account Details */}
       <View style={[styles.card, { padding: 10 }]}>
         <View style={{ alignItems: 'center', paddingTop: 10, gap: 10 }}>
-          <Image style={styles.image} source={{ uri: profile?.profilePicture }} />
+          <Image style={styles.image} source={{ uri: profile?.profilePicture ? profile?.profilePicture : "https://avatar.iran.liara.run/public" }} />
           <Text style={styles.profileText}>{profile?.userName}</Text>
           <Text style={styles.profileText}>{profile?.email}</Text>
           <Text style={styles.profileText}>{profile?.phoneNumber}</Text>
