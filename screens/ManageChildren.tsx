@@ -5,6 +5,8 @@ import { API_URL } from '@/config';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { defaultStyles } from '@/constants/Styles';
+import Colors from '@/constants/Colors';
 
 const ManageChildren = () => {
 
@@ -33,7 +35,7 @@ const ManageChildren = () => {
   const router = useRouter();
 
   return (
-    <View style={{ paddingHorizontal: 10 }}>
+    <View style={{ paddingHorizontal: 10, flex: 1 }}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} >
@@ -64,6 +66,13 @@ const ManageChildren = () => {
           )
         }
 
+      </View>
+
+      <View style={styles.footer}>
+        <TouchableOpacity style={defaultStyles.btn}
+          onPress={() => router.navigate(`(auth)/profile/addChildren`)}>
+          <Text style={{ fontFamily: 'lato-bold', fontSize: 13 }}>Add Children</Text>
+        </TouchableOpacity>
       </View>
     </View>
   )
@@ -103,5 +112,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 15,
     alignItems: 'center',
+  },
+  footer: {
+    position: 'absolute',
+    height: 100,
+    bottom: -30,
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderTopColor: Colors.grey,
+    borderTopWidth: StyleSheet.hairlineWidth,
   }
 })

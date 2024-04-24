@@ -21,6 +21,13 @@ export const defaultStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  btnDis: {
+    backgroundColor: '#CCCCCC',
+    height: 50,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   btnOutline: {
     backgroundColor: '#fff',
     height: 50,

@@ -1,4 +1,4 @@
-import { View, Text, Image, StyleSheet } from 'react-native'
+import { View, Text, Image, StyleSheet, Touchable, TouchableOpacity } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { API_URL } from '@/config';
@@ -23,8 +23,14 @@ const DashboardHeader = () => {
 
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refresh, setRefresh] = useState(false);
 
   const defaultProfilePic = "https://kidwallet-bucket.s3.ap-southeast-1.amazonaws.com/profilePictures/default.jpg";
+
+  const refreshData = () => {
+    setRefresh(!refresh);
+    console.log(refresh);
+  }
 
 
   useEffect(() => {
@@ -45,8 +51,9 @@ const DashboardHeader = () => {
 
     if (authState?.authenticated) {
       fetchData();
+      console.log("Data Fetched")
     }
-  }, [authState?.authenticated])
+  }, [authState?.authenticated, refresh])
 
   return (
     //Main container
@@ -63,6 +70,9 @@ const DashboardHeader = () => {
           </View>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <TouchableOpacity onPress={refreshData}>
+            <Ionicons name='refresh' size={24} />
+          </TouchableOpacity>
           <Ionicons name='help-circle-outline' size={24} />
           <Ionicons name='notifications' size={24} />
         </View>

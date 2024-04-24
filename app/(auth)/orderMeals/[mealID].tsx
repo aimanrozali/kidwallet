@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image, ScrollView } from 'react-native'
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
@@ -91,51 +91,53 @@ const MealPage = () => {
     if (type === "0") {
       return (
         <>
-          <View>
-            <Image source={{ uri: meal.mealPic }} style={styles.image} />
-          </View>
-
-          <View style={styles.innerContainer}>
-            <View style={{ paddingTop: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text style={styles.headerText}>{meal.mealName}</Text>
-              <View style={{ alignItems: 'flex-end', gap: 10 }}>
-                <Text style={styles.headerText}>RM{meal.price.toFixed(2)}</Text>
-                <Text style={{ fontFamily: 'lato-sb', fontSize: 12, color: Colors.grey }}>per serving</Text>
-              </View>
+          <ScrollView style={{ flex: 1 }}>
+            <View>
+              <Image source={{ uri: meal.mealPic }} style={styles.image} />
             </View>
 
-            <View style={{ paddingTop: 25 }}>
-              <Text style={styles.subHeaderTxt}>Nutrition Facts</Text>
-              <View style={[styles.nutritionView, { paddingTop: 20 }]}>
-                <Text style={styles.nutritionTxt}>Serving Size</Text>
-                <Text style={styles.nutritionTxt}>1 dish (300g)</Text>
+            <View style={styles.innerContainer}>
+              <View style={{ paddingTop: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={styles.headerText}>{meal.mealName}</Text>
+                <View style={{ alignItems: 'flex-end', gap: 10 }}>
+                  <Text style={styles.headerText}>RM{meal.price.toFixed(2)}</Text>
+                  <Text style={{ fontFamily: 'lato-sb', fontSize: 12, color: Colors.grey }}>per serving</Text>
+                </View>
               </View>
-              <View style={styles.nutritionView}>
-                <Text style={styles.nutritionTxt}>Total Protein</Text>
-                <Text style={styles.nutritionTxt}>{meal.protein}gm</Text>
-              </View>
-              <View style={styles.nutritionView}>
-                <Text style={styles.nutritionTxt}>Total Carbohydrate</Text>
-                <Text style={styles.nutritionTxt}>{meal.carbohydrate}</Text>
-              </View>
-              <View style={styles.nutritionView}>
-                <Text style={styles.nutritionTxt}>Total Fat</Text>
-                <Text style={styles.nutritionTxt}>{meal.fat}</Text>
-              </View>
-              <View style={styles.nutritionView}>
-                <Text style={styles.nutritionTxt}>Total Fiber</Text>
-                <Text style={styles.nutritionTxt}>{meal.fiber}</Text>
+
+              <View style={{ paddingTop: 25 }}>
+                <Text style={styles.subHeaderTxt}>Nutrition Facts</Text>
+                <View style={[styles.nutritionView, { paddingTop: 20 }]}>
+                  <Text style={styles.nutritionTxt}>Serving Size</Text>
+                  <Text style={styles.nutritionTxt}>1 dish (300g)</Text>
+                </View>
+                <View style={styles.nutritionView}>
+                  <Text style={styles.nutritionTxt}>Total Protein</Text>
+                  <Text style={styles.nutritionTxt}>{meal.protein}gm</Text>
+                </View>
+                <View style={styles.nutritionView}>
+                  <Text style={styles.nutritionTxt}>Total Carbohydrate</Text>
+                  <Text style={styles.nutritionTxt}>{meal.carbohydrate}</Text>
+                </View>
+                <View style={styles.nutritionView}>
+                  <Text style={styles.nutritionTxt}>Total Fat</Text>
+                  <Text style={styles.nutritionTxt}>{meal.fat}</Text>
+                </View>
+                <View style={styles.nutritionView}>
+                  <Text style={styles.nutritionTxt}>Total Fiber</Text>
+                  <Text style={styles.nutritionTxt}>{meal.fiber}</Text>
+                </View>
+
+
               </View>
 
 
+              <View style={{ paddingTop: 20, gap: 10 }}>
+                <Text style={styles.subHeaderTxt}>Allergens</Text>
+                <Text style={styles.allergensTxt}>{meal.allergens.length === 0 ? meal.allergens.join(', ') : "None"}</Text>
+              </View>
             </View>
-
-
-            <View style={{ paddingTop: 20, gap: 10 }}>
-              <Text style={styles.subHeaderTxt}>Allergens</Text>
-              <Text style={styles.allergensTxt}>{meal.allergens.join(', ')}</Text>
-            </View>
-          </View>
+          </ScrollView>
           {/* footer */}
           <View style={styles.footer}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -161,42 +163,45 @@ const MealPage = () => {
     else {
       return (
         <>
-          <View>
-            <Image source={{ uri: meal.mealPic }} style={styles.image} />
-          </View>
+          <ScrollView style={{ flex: 1 }}>
+            <View>
+              <Image source={{ uri: meal.mealPic }} style={styles.image} />
+            </View>
 
-          <View style={styles.innerContainer}>
-            <View style={{ paddingTop: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text style={styles.headerText}>{meal.mealName}</Text>
-              <View style={{ alignItems: 'flex-end', gap: 10 }}>
-                <Text style={styles.headerText}>RM{meal.price.toFixed(2)}</Text>
-                <Text style={{ fontFamily: 'lato-sb', fontSize: 12, color: Colors.grey }}>per serving</Text>
+            <View style={styles.innerContainer}>
+              <View style={{ paddingTop: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={styles.headerText}>{meal.mealName}</Text>
+                <View style={{ alignItems: 'flex-end', gap: 10 }}>
+                  <Text style={styles.headerText}>RM{meal.price.toFixed(2)}</Text>
+                  <Text style={{ fontFamily: 'lato-sb', fontSize: 12, color: Colors.grey }}>per serving</Text>
+                </View>
+              </View>
+
+              <View style={{ paddingTop: 25 }}>
+                <Text style={styles.subHeaderTxt}>Nutrition Facts</Text>
+
+                <View style={styles.nutritionView}>
+                  <Text style={styles.nutritionTxt}>Total Sugar</Text>
+                  <Text style={styles.nutritionTxt}>{meal.sugar}g</Text>
+                </View>
+                <View style={styles.nutritionView}>
+                  <Text style={styles.nutritionTxt}>Total Caffeine</Text>
+                  <Text style={styles.nutritionTxt}>{meal.caffeine}mg</Text>
+                </View>
+                <View style={styles.nutritionView}>
+                  <Text style={styles.nutritionTxt}>Total Calcium</Text>
+                  <Text style={styles.nutritionTxt}>{meal.calcium}mg</Text>
+                </View>
+              </View>
+
+              <View style={{ paddingTop: 20, gap: 10 }}>
+                <Text style={styles.subHeaderTxt}>Allergens</Text>
+                <Text style={styles.allergensTxt}>{meal.allergens.length === 0 ? meal.allergens.join(', ') : "None"}</Text>
               </View>
             </View>
 
-            <View style={{ paddingTop: 25 }}>
-              <Text style={styles.subHeaderTxt}>Nutrition Facts</Text>
 
-              <View style={styles.nutritionView}>
-                <Text style={styles.nutritionTxt}>Total Sugar</Text>
-                <Text style={styles.nutritionTxt}>{meal.sugar}g</Text>
-              </View>
-              <View style={styles.nutritionView}>
-                <Text style={styles.nutritionTxt}>Total Caffeine</Text>
-                <Text style={styles.nutritionTxt}>{meal.caffeine}mg</Text>
-              </View>
-              <View style={styles.nutritionView}>
-                <Text style={styles.nutritionTxt}>Total Calcium</Text>
-                <Text style={styles.nutritionTxt}>{meal.calcium}mg</Text>
-              </View>
-            </View>
-
-            <View style={{ paddingTop: 20, gap: 10 }}>
-              <Text style={styles.subHeaderTxt}>Allergens</Text>
-              <Text style={styles.allergensTxt}>{meal.allergens.join(', ')}</Text>
-            </View>
-          </View>
-
+          </ScrollView>
           {/* footer */}
           <View style={styles.footer}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -215,7 +220,6 @@ const MealPage = () => {
               </TouchableOpacity>
             </View>
           </View>
-
         </>
       )
     }

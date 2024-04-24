@@ -1,9 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import CartReducer from "@/hooks/CardReducer";
+import DateReducer from "@/hooks/DateReducer";
+import NameReducer from "@/hooks/NameReducer";
 
 export const store = configureStore({
   reducer: {
-    cart: CartReducer
+    cart: CartReducer,
+    date: DateReducer,
+    name: NameReducer
   }
 })
 

@@ -74,7 +74,8 @@ const WalletPage = () => {
         </View>
 
         <View style={styles.mainButtonContainer}>
-          <TouchableOpacity style={styles.btn}>
+          <TouchableOpacity style={styles.btn}
+            onPress={() => router.navigate(`/(auth)/ewallet/topupScreen?ewalletID=${ewalletID}`)}>
             <Ionicons name='add-circle-outline' size={40} />
             <Text style={styles.btnText}>Add Funds</Text>
           </TouchableOpacity>

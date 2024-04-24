@@ -1,7 +1,9 @@
+import { STRIPE_PUBLISH_KEY } from '@/config';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { store } from '@/store/store';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { StripeProvider } from '@stripe/stripe-react-native';
 import { useFonts } from 'expo-font';
 import { Stack, Tabs } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -48,7 +50,10 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <Provider store={store}>
-        <RootLayoutNav />
+        <StripeProvider
+          publishableKey={STRIPE_PUBLISH_KEY}>
+          <RootLayoutNav />
+        </StripeProvider>
       </Provider>
     </AuthProvider>
   );
@@ -65,6 +70,8 @@ function RootLayoutNav() {
       <Stack.Screen name='(public)/SignUp' options={{ headerShown: false }} />
       <Stack.Screen name='(auth)/(tabs)' options={{ headerShown: false }} />
       <Stack.Screen name='(auth)/ewallet/[ewalletID]' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
+      <Stack.Screen name='(auth)/ewallet/topupScreen' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
+      <Stack.Screen name='(auth)/ewallet/paymentScreen' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
       <Stack.Screen name='(auth)/orderMeals/orderedList' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
       <Stack.Screen name='(auth)/orderMeals/mealsList' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
       <Stack.Screen name='(auth)/orderMeals/[mealID]' options={{ headerTitle: '', headerTransparent: true }} />

@@ -57,6 +57,10 @@ export const cartSlice = createSlice({
         }
       }
     },
+    clearCart: (state, action) => {
+      const { studentID } = action.payload;
+      state.cart[studentID] = [];
+    },
   }
 });
 
@@ -71,7 +75,18 @@ export const selectQuantityById = (mealID: number, studentID: string) => createS
   }
 );
 
+export const selectTotalPrice = (studentID: string) => createSelector(
+  (state: RootState) => state.cart[studentID],
+  (cart: CartItem[] | undefined) => {
+    if (!cart) {
+      return 0;
+    }
+    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+  }
+);
 
-export const { addToCart, removeFromCart, incrementQuantity, decrementQuantity } = cartSlice.actions;
+
+
+export const { addToCart, removeFromCart, incrementQuantity, decrementQuantity, clearCart } = cartSlice.actions;
 
 export default cartSlice.reducer;

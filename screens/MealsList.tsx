@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity, Touchable, ScrollView, Image, ActivityIndicator } from 'react-native'
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'expo-router'
 import { FontAwesome5, Fontisto, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { defaultStyles } from '@/constants/Styles';
@@ -10,6 +10,10 @@ import { Meals } from '@/interfaces/meals';
 import { API_URL } from '@/config';
 import axios from 'axios';
 import DatePicker from 'react-native-date-picker';
+import { useAppSelector, useAppDispatch } from '@/hooks/hooks';
+import { setDates } from '@/hooks/DateReducer';
+import { setName } from '@/hooks/NameReducer';
+import { RootState } from '@/store/store';
 
 interface Props {
   name: string,
@@ -35,7 +39,7 @@ const MealsList = ({ name, id }: Props) => {
         const responseJson = response.data.data;
         setMeal(responseJson);
 
-        console.log("At Meal:", responseJson); // Log the updated value here
+        //console.log("At Meal:", responseJson); // Log the updated value here
         setLoadedMeal(true);
 
       } catch (err) {
@@ -57,7 +61,7 @@ const MealsList = ({ name, id }: Props) => {
         const responseJson = response.data.data;
         setDrink(responseJson);
 
-        console.log("At Drink:", responseJson); // Log the updated value here
+        //console.log("At Drink:", responseJson); // Log the updated value here
         setLoadedDrink(true);
 
       } catch (err) {
@@ -70,6 +74,10 @@ const MealsList = ({ name, id }: Props) => {
   }, []);
 
 
+  const dateFromStore = useAppSelector((state) => state.date.date);
+  const orderName = useAppSelector((state) => state.name.name);
+  const cart = useAppSelector((state: RootState) => state.cart.cart[id]);
+  const dispatch = useAppDispatch();
 
   let todayDate = new Date()
   var today = todayDate.toLocaleDateString("en-MY", { month: 'numeric', year: 'numeric', day: 'numeric' });
@@ -77,6 +85,29 @@ const MealsList = ({ name, id }: Props) => {
   const router = useRouter();
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
+  const [cartEmpty, setCartEmpty] = useState(false);
+  const [cartState, setCartState] = useState([]);
+
+  useEffect(() => {
+    if (cart?.length === 0) {
+      setCartEmpty(true);
+    } else {
+      setCartEmpty(false);
+    }
+  }, [])
+
+  useEffect(() => {
+    dispatch(setDates(date.toISOString()));
+    console.log("Date::", dateFromStore);
+  }, [date]);
+
+  useEffect(() => {
+    dispatch(setName(name));
+    console.log("Name::", orderName);
+  }, []);
+
+
+
 
 
   return (
@@ -195,7 +226,8 @@ const MealsList = ({ name, id }: Props) => {
       {/* View Cart Button */}
       <View style={styles.cartBtn}>
         <TouchableOpacity
-          style={[styles.btn, { flexDirection: 'row' }]}
+          //disabled={cartEmpty}
+          style={styles.btnEnabled}
           onPress={() => router.push(`/(auth)/orderMeals/viewCart?id=${id}`)}>
           <FontAwesome5 name="shopping-basket" size={24} color='black' />
           <Text style={{ fontFamily: 'lato-bold', fontSize: 13, padding: 10 }}>View Cart</Text>
@@ -269,13 +301,24 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 5,
   },
-  btn: {
+  btnEnabled: {
+    flexDirection: 'row',
     backgroundColor: Colors.primary,
     height: 50,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 10
+  },
+  btnDisabled: {
+    flexDirection: 'row',
+    backgroundColor: '#CCCCCC', // Gray out the background color to indicate disabled state
+    height: 50,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    opacity: 0.5, // Reduce opacity to further indicate disabled state
   },
   innerScroll: {
     flexDirection: 'row',
