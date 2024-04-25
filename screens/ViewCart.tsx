@@ -13,6 +13,7 @@ import { ActivityIndicator } from 'react-native-paper';
 import axios from 'axios';
 import { API_URL } from '@/config';
 import { Student, Wallet } from '@/interfaces/student';
+import moment from 'moment';
 
 const ViewCart = () => {
 
@@ -24,6 +25,8 @@ const ViewCart = () => {
   const [loading, setLoading] = useState(false);
   const [walletData, setWalletData] = useState<Wallet | null>(null);
   const [cartEmpty, setCartEmpty] = useState(false);
+  const [mealsData, setMealsData] = useState<number[]>([]);
+  const [mealQuantity, setMealQuantity] = useState<number[]>([]);
   //const { orderDate } = useLocalSearchParams<{ orderDate: string }>();
   // const [date, setDate] = useState(new Date(orderDate));
   // console.log("ORDER DATE::", orderDate);
@@ -34,7 +37,7 @@ const ViewCart = () => {
   let todayDate = new Date();
   const orderDate = useAppSelector((state) => state.date.date);
   const [date, setDate] = useState(new Date(orderDate));
-  console.log(orderDate);
+  //console.log(orderDate);
   let cart = []
   cart = useAppSelector((state: RootState) => state.cart.cart[id]) ?? [];
   let subtotal = 0;
@@ -44,7 +47,7 @@ const ViewCart = () => {
   } else {
     // const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0) ?? 0;
     subtotal = useAppSelector((state: RootState) => selectTotalPrice(id)(state.cart));
-    console.log("CART::", cart)
+    //console.log("CART::", cart)
   }
 
   // Assume a tax rate of 0%
@@ -55,11 +58,22 @@ const ViewCart = () => {
   // Calculate the total
   const total = subtotal + tax;
 
-  console.log("CART::", cart)
+  console.log("CART::", cart);
+
+  useEffect(() => {
+    const mealsData = cart.map(item => item.mealID);
+    const mealQuantity = cart.map(item => item.quantity);
+    setMealsData(mealsData as any);
+    setMealQuantity(mealQuantity as any);
+    console.log("MEALS DATA::", mealsData);
+    console.log("MEAL QUANTITY::", mealQuantity);
+  }, []);
+
+
 
   useEffect(() => {
     const url = `${API_URL}/api/Student`;
-    console.log(url + `/${id}`);
+    //console.log(url + `/${id}`);
 
     const fetchData = async () => {
       try {
@@ -67,7 +81,7 @@ const ViewCart = () => {
         const responseJson = response.data.data;
         setWalletData(responseJson.wallet);
 
-        console.log("At Wallet:", responseJson); // Log the updated value here
+        //console.log("At Wallet:", responseJson); // Log the updated value here
 
       } catch (err) {
         console.error("At Wallet", err);
@@ -82,11 +96,18 @@ const ViewCart = () => {
   const handleSubmit = async () => {
     setLoading(true);
     var response = await submitOrder();
-    console.log(response);
+    //console.log(response);
     if (response?.data.success) {
-      Alert.alert('Order Placed', 'Your order has been placed successfully');
-      dispatch(clearCart({ studentID: id }));
-      router.push(`/orderMeals/orderedList?id=${id}`)
+
+      var respOrder = await submitOrderDetails();
+
+      if (respOrder?.data.success) {
+
+        Alert.alert('Order Placed', 'Your order has been placed successfully');
+        dispatch(clearCart({ studentID: id }));
+        router.push(`/orderMeals/orderedList?id=${id}`)
+
+      }
     }
     else {
       Alert.alert('Order Failed', response?.data.data);
@@ -94,17 +115,11 @@ const ViewCart = () => {
     setLoading(false);
   }
 
-  const requestData = {
-
-    id: walletData?.walletID,
-    amount: total,
-  };
-
   const submitOrder = async () => {
     try {
-      console.log(requestData, "REQUEST DATA")
-      console.log(walletData?.walletID, "WALLET ID");
-      console.log(total, "TOTAL");
+      //console.log(requestData, "REQUEST DATA")
+      //console.log(walletData?.walletID, "WALLET ID");
+      //console.log(total, "TOTAL");
       var id = walletData!.walletID.toString();
       var amount = total;
       const response = await axios.post(`${API_URL}/api/Wallet`, { id, amount }, {
@@ -119,11 +134,46 @@ const ViewCart = () => {
           console.error('Unexpected error:', error);
         }
       });
-      console.log(response, "Response");
+      //console.log(response, "Response");
       return response;
     } catch (err) {
       console.error(err)
     }
+  }
+
+  const submitOrderDetails = async () => {
+    console.log(mealsData);
+    console.log(mealQuantity);
+    const response = await axios.post(`${API_URL}/api/Order/SubmitOrder`,
+      {
+        StudentID: id,
+        OrderDate: modifyDate(),
+        MealID: mealsData,
+        Quantity: mealQuantity,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+      .catch((error) => {
+        if (axios.isAxiosError(error)) {
+          console.error('Error status:', error.response?.status);
+          console.error('Error message:', error.response?.data);
+        } else {
+          console.error('Unexpected error:', error);
+        }
+      });
+
+    console.log("ORDERRESPONSE::", response);
+
+    return response;
+  }
+
+  const modifyDate = () => {
+    let parsedDate = moment(date, 'M/D/YYYY');
+    return parsedDate.format('YYYY-MM-DD');
   }
 
   return (

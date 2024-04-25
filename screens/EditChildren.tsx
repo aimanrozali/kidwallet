@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard, TextInput } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard, TextInput, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { API_URL } from '@/config';
 import axios from 'axios';
@@ -7,7 +7,7 @@ import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { defaultStyles } from '@/constants/Styles';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { RadioButton } from 'react-native-paper';
+import { ActivityIndicator, Modal, RadioButton } from 'react-native-paper';
 
 const allergics = [
   { name: "Tree Nuts", value: "Tree Nuts" },
@@ -56,8 +56,9 @@ const EditChildren = () => {
 
 
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const [studentID, setStudentID] = useState(id);
+  const [studentID, setStudentID] = useState(parseInt(id));
   const [studentName, setStudentName] = useState("");
   const [grade, setGrade] = useState("");
   const [className, setClassName] = useState("");
@@ -84,8 +85,40 @@ const EditChildren = () => {
       });
   }
 
-  const updateData = async () => {
+  const deletePrompt = () => {
+    Alert.alert("Delete", "Are you sure you want to delete this child?",
+      [{ text: 'Cancel', onPress: () => console.log('Cancel Pressed') }, { text: 'Delete', style: 'destructive', onPress: () => handleDelete() }]
+    );
+  }
 
+  const deleteChild = async () => {
+    let resp = false;
+    await axios.delete(`${API_URL}/api/Student/${id}`)
+      .then((response) => {
+        resp = true;
+        console.log(response.data);
+      })
+      .catch((error) => {
+        if (axios.isAxiosError(error)) {
+          console.error('Error status:', error.response?.status);
+          console.error('Error message:', error.response?.data);
+        } else {
+          console.error('Unexpected error:', error);
+        }
+      });
+    return resp;
+  };
+
+  const handleDelete = async () => {
+    setLoading(true);
+    let res = await deleteChild();
+    if (res) {
+      setLoading(false);
+      Alert.alert('Success', 'Child deleted successfully', [{ text: 'OK', onPress: () => router.navigate('(auth)/profile/manageChildren') }]);
+    } else {
+      setLoading(false);
+      Alert.alert('Error', 'Failed to delete child');
+    }
   }
 
 
@@ -187,9 +220,21 @@ const EditChildren = () => {
             >
               <Text style={defaultStyles.btnText}>Update</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={[defaultStyles.btnDel, { marginHorizontal: 40, marginTop: 10 }]}
+              onPress={deletePrompt}
+            >
+              <Text style={defaultStyles.btnText}>Delete</Text>
+            </TouchableOpacity>
           </View>
         </TouchableWithoutFeedback>
+
       </View>
+      <Modal visible={loading} dismissable={false} contentContainerStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+
+        <ActivityIndicator animating={loading} color="#E2EF09" size="large" style={{ position: 'absolute', top: '45%', left: '45%', zIndex: 1 }} />
+
+      </Modal>
     </View>
   )
 }

@@ -1,14 +1,25 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
-import { useRouter } from 'expo-router'
+import { useRouter, useSegments } from 'expo-router'
 import { Student } from '@/interfaces/student'
 import { API_URL } from '@/config'
 import axios from 'axios'
+import { useAuth } from '@/context/AuthContext'
 
-const MealsPreOrder = () => {
+interface Props {
+  refresh: boolean;
+}
+
+const MealsPreOrder = (refresh: Props) => {
+
+  const { authState } = useAuth();
 
   const [studentData, setStudentData] = useState<Student[] | null>(null);
+
+  const segments = useSegments();
+
+  // Get student data on mount and refresh if necessary
 
   useEffect(() => {
     const url = `${API_URL}/api/Student/GetAll`;
@@ -28,7 +39,7 @@ const MealsPreOrder = () => {
 
     fetchData();
 
-  }, []);
+  }, [refresh, segments]);
 
   const router = useRouter();
 

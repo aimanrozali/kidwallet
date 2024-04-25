@@ -3,13 +3,14 @@ import React, { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { defaultStyles } from '@/constants/Styles';
-import { RadioButton } from 'react-native-paper';
+import { ActivityIndicator, Modal, RadioButton } from 'react-native-paper';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 import DatePicker from 'react-native-date-picker';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { API_URL } from '@/config';
 import moment from 'moment';
+import Colors from '@/constants/Colors';
 
 const allergics = [
   { name: "Tree Nuts", value: "Tree Nuts" },
@@ -32,14 +33,18 @@ const AddChildren = () => {
   const [grade, setGrade] = useState('');
   const [className, setClassName] = useState('');
   const [name, setName] = useState('');
+  const [loading, setLoading] = useState(false);
 
   let todayDate = new Date()
 
   const handleAdd = async () => {
+    setLoading(true);
     let res = await addChild();
     if (res) {
+      setLoading(false);
       Alert.alert('Success', 'Child added successfully', [{ text: 'OK', onPress: () => router.navigate('(auth)/profile/manageChildren') }]);
     } else {
+      setLoading(false);
       Alert.alert('Error', 'Failed to add child');
     }
   }
@@ -210,6 +215,13 @@ const AddChildren = () => {
         </View>
 
       </TouchableWithoutFeedback>
+
+      <Modal visible={loading} dismissable={false} contentContainerStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+
+        <ActivityIndicator animating={loading} color="#E2EF09" size="large" style={{ position: 'absolute', top: '45%', left: '45%', zIndex: 1 }} />
+
+      </Modal>
+
 
     </View>
   )

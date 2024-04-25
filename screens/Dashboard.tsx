@@ -10,7 +10,7 @@ import { API_URL } from '@/config'
 import { useAuth } from '@/context/AuthContext'
 import { FontAwesome, Ionicons } from '@expo/vector-icons'
 import Colors from '@/constants/Colors'
-import { useRouter } from 'expo-router'
+import { useRouter, useSegments } from 'expo-router'
 
 interface UserData {
   email: string;
@@ -30,6 +30,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(false);
   const router = useRouter();
+  const segments = useSegments();
 
   const defaultProfilePic = "https://kidwallet-bucket.s3.ap-southeast-1.amazonaws.com/profilePictures/default.jpg";
 
@@ -59,7 +60,7 @@ const Dashboard = () => {
       fetchData();
     }
 
-  }, [authState?.authenticated, refresh]);
+  }, [authState?.authenticated, refresh, segments]);
 
 
   useEffect(() => {

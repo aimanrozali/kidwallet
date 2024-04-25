@@ -7,10 +7,18 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { defaultStyles } from '@/constants/Styles';
 import Colors from '@/constants/Colors';
+import { ActivityIndicator } from 'react-native-paper';
 
-const ManageChildren = () => {
+interface Props {
+  refresh: boolean
+
+}
+
+const ManageChildren = (refresh: Props) => {
 
   const [studentData, setStudentData] = useState<Student[] | null>(null);
+
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const url = `${API_URL}/api/Student/GetAll`;
@@ -19,6 +27,7 @@ const ManageChildren = () => {
       try {
         const response = await axios.get(url);
         const responseJson = response.data.data;
+        setLoading(false);
         setStudentData(responseJson);
 
         console.log(responseJson); // Log the updated value here
@@ -30,7 +39,7 @@ const ManageChildren = () => {
 
     fetchData();
 
-  }, []);
+  }, [refresh]);
 
   const router = useRouter();
 
@@ -45,26 +54,28 @@ const ManageChildren = () => {
       </View>
 
       <View style={{ paddingTop: 20 }}>
-        {studentData?.length ?
-          (<ScrollView>
+        {loading ? <ActivityIndicator style={{ paddingTop: 50 }} animating={true} color={Colors.primary} size='large' /> :
+          studentData?.length ?
+            (<ScrollView>
 
-            {studentData?.map((item, index) => (
-              <TouchableOpacity style={[styles.card, {}]}
-                onPress={() => router.navigate(`(auth)/profile/editChildren?id=${item.studentID}`)}
-                key={index}>
-                <View style={styles.cardInnerContainer}>
-                  <Text style={{ fontFamily: 'lato-bold', fontSize: 13 }}>{item.studentName}</Text>
-                  <Ionicons name='chevron-forward' size={20} />
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>) : (
+              {studentData?.map((item, index) => (
+                <TouchableOpacity style={[styles.card, {}]}
+                  onPress={() => router.navigate(`(auth)/profile/editChildren?id=${item.studentID}`)}
+                  key={index}>
+                  <View style={styles.cardInnerContainer}>
+                    <Text style={{ fontFamily: 'lato-bold', fontSize: 13 }}>{item.studentName}</Text>
+                    <Ionicons name='chevron-forward' size={20} />
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>) : (
 
-            <View style={{ alignSelf: 'center', paddingTop: 100, flexShrink: 2, width: '70%' }}>
-              <Text style={{ fontFamily: "lato-sb", alignSelf: 'center', alignContent: 'center', flexWrap: 'wrap' }}>No children / dependent registered under this account. Please register first.</Text>
-            </View>
-          )
+              <View style={{ alignSelf: 'center', paddingTop: 100, flexShrink: 2, width: '70%' }}>
+                <Text style={{ fontFamily: "lato-sb", alignSelf: 'center', alignContent: 'center', flexWrap: 'wrap' }}>No children / dependent registered under this account. Please register first.</Text>
+              </View>
+            )
         }
+
 
       </View>
 
