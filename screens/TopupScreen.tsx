@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,15 +7,26 @@ import axios from 'axios';
 import { Student } from '@/interfaces/student';
 import { defaultStyles } from '@/constants/Styles';
 import Colors from '@/constants/Colors';
+import { User } from '@/interfaces/user';
+import { usePaymentSheet } from '@stripe/stripe-react-native';
 
 const TopupScreen = () => {
 
   const router = useRouter();
   const [walletData, setWalletData] = useState<Student | null>(null);
+  const [userData, setUserData] = useState<User | null>(null);
   const [amount, setAmount] = useState("");
+  const [initPay, setInitPay] = useState(false);
+
+  const [ready, setReady] = useState(false);
+  const { initPaymentSheet, presentPaymentSheet, loading } = usePaymentSheet();
 
   const { ewalletID } = useLocalSearchParams<{ ewalletID: string }>();
   console.log(ewalletID);
+
+  useEffect(() => {
+    initialisePaymentSheet();
+  }, [initPay]);
 
   useEffect(() => {
     const url = `${API_URL}/api/Student`;
@@ -38,15 +49,77 @@ const TopupScreen = () => {
 
   }, []);
 
+  useEffect(() => {
+    const url = `${API_URL}/api/User/GetInfo`;
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(url);
+        const responseJson = response.data.data;
+        setUserData(responseJson);
+
+        console.log("At Wallet User Data:", responseJson); // Log the updated value here
+
+      } catch (err) {
+        console.error("At Wallet", err);
+      }
+    }
+
+    fetchData();
+
+  }, []);
+
   const handleChangeText = (text: any) => {
     // Remove any non-numeric characters from the input
     const numericText = text.replace(/[^0-9]/g, '');
     setAmount(numericText);
   };
 
-  const addFunds = () => {
+  const initialisePaymentSheet = async () => {
+    const { paymentIntent, ephemeralKey, customer } = await fetchPaymentSheetParams();
 
+    const { error } = await initPaymentSheet({
+      customerId: customer,
+      customerEphemeralKeySecret: ephemeralKey,
+      paymentIntentClientSecret: paymentIntent,
+      merchantDisplayName: 'KidWallet App',
+
+    });
+
+    if (error) {
+      Alert.alert(`Error code: ${error.code}`, error.message);
+    } else {
+      setReady(true);
+    }
   }
+
+  const fetchPaymentSheetParams = async () => {
+    const response = await axios.post(`${API_URL}/api/Payment/InitPayment`, {
+      amount: amount,
+      email: userData?.email,
+      userID: 1
+    });
+    const { paymentIntent, ephemeralKey, customer } = response.data;
+
+    return {
+      paymentIntent,
+      ephemeralKey,
+      customer
+    };
+  };
+
+  async function topup() {
+    setInitPay(!initPay);
+    const { error } = await presentPaymentSheet();
+
+    if (error) {
+      Alert.alert(`Error code: ${error.code}`, error.message);
+    } else {
+      Alert.alert('Success', 'The Payment Confirmed Successfully', [{ text: 'OK', onPress: () => router.navigate(`(auth)/ewallet/${walletData?.studentID}`) }]);
+      setReady(false);
+    }
+  }
+
 
   return (
     <>
@@ -111,7 +184,7 @@ const TopupScreen = () => {
       {/* Footer */}
       <View style={styles.footer}>
         <TouchableOpacity style={styles.btn}
-          onPress={() => router.navigate(`/(auth)/ewallet/paymentScreen`)}>
+          onPress={topup}>
           <Text>Add Funds</Text>
         </TouchableOpacity>
       </View>

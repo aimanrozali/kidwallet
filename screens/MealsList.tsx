@@ -197,29 +197,33 @@ const MealsList = ({ name, id }: Props) => {
       <View style={{}}>
         <Text style={styles.mealsHeaderTxt}>Drinks</Text>
         <View style={styles.card}>
-          <ScrollView style={[styles.scrollViewStyle]}
-          >
-            {drink?.map((item, index) => (
-              <View key={index} style={styles.innerScroll}>
-                <View style={{ flexDirection: 'row', gap: 20, alignItems: 'center' }} key={index}>
-                  <Image source={{ uri: item.mealPic }} style={styles.smallImage} />
-                  <View>
-                    <Text style={styles.mealsNameTxt}>{item.mealName}</Text>
-                    <View style={{ flexDirection: 'row', gap: 50 }}>
-                      <Text style={styles.priceTxt}>RM{item.price.toFixed(2)}</Text>
-                      <Text style={styles.caloriesTxt}>{item.calories}kcal</Text>
+          {loadedDrink && drink ? (
+            <ScrollView style={[styles.scrollViewStyle]}
+            >
+              {drink?.map((item, index) => (
+                <View key={index} style={styles.innerScroll}>
+                  <View style={{ flexDirection: 'row', gap: 20, alignItems: 'center' }} key={index}>
+                    <Image source={{ uri: item.mealPic }} style={styles.smallImage} />
+                    <View>
+                      <Text style={styles.mealsNameTxt}>{item.mealName}</Text>
+                      <View style={{ flexDirection: 'row', gap: 50 }}>
+                        <Text style={styles.priceTxt}>RM{item.price.toFixed(2)}</Text>
+                        <Text style={styles.caloriesTxt}>{item.calories}kcal</Text>
+                      </View>
                     </View>
                   </View>
+                  <View>
+                    <TouchableOpacity key={index}>
+                      <Ionicons name="add-circle" size={24} color={Colors.primary}
+                        onPress={() => router.push(`/(auth)/orderMeals/${item.mealID}?id=${id}`)} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <View>
-                  <TouchableOpacity key={index}>
-                    <Ionicons name="add-circle" size={24} color={Colors.primary}
-                      onPress={() => router.push(`/(auth)/orderMeals/${item.mealID}?id=${id}`)} />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            ))}
-          </ScrollView>
+              ))}
+            </ScrollView>
+          ) :
+            <ActivityIndicator />
+          }
         </View>
       </View>
 
