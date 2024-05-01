@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Modal } from 'react-native'
+import React, { DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_REACT_NODES, ReactEventHandler, ReactNode, useEffect, useState } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
@@ -11,6 +11,7 @@ import { Orders } from '@/interfaces/order';
 import { ActivityIndicator } from 'react-native-paper';
 import { createShimmerPlaceholder } from 'react-native-shimmer-placeholder';
 import { LinearGradient } from 'expo-linear-gradient';
+import Animated, { FadeIn, FadeOut, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 
 const OrderedMeals = () => {
@@ -22,7 +23,41 @@ const OrderedMeals = () => {
 
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  console.log(id);
+  // console.log(id);
+
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
+
+  const opacity = useSharedValue(0);
+
+  useEffect(() => {
+    if (popupVisible) {
+      opacity.value = withSpring(1);
+    } else {
+      opacity.value = withSpring(0);
+    }
+  }, [popupVisible, opacity]);
+
+  const popupStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+    };
+  });
+
+  const handleMoreButtonClick = (event: any) => {
+
+    setPopupVisible(!popupVisible);
+    const { pageX, pageY } = event.nativeEvent;
+    setPopupPosition({ top: pageY - 49, left: pageX - 60 });
+    //wait for 500ms
+    setPopupVisible(true);
+  };
+
+  const handleOptionSelect = (option: string) => {
+    // Handle the selected option
+    console.log('Selected option:', option);
+    setPopupVisible(false); // Close the popup after option selection
+  };
 
   useEffect(() => {
     const url = `${API_URL}/api/Student`;
@@ -85,43 +120,49 @@ const OrderedMeals = () => {
         </View>
       </View>
 
-      {/* card */}
-      <View style={styles.card}>
-        <ScrollView style={{}}
-          contentContainerStyle={{ padding: 15 }}>
-          {!loading ? (
-            orderData && orderData?.length > 0 ? (
-              orderData.map((order, index) => (
-                <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15 }}>
-                    <Image source={{ uri: order.meal.mealPic }} style={styles.smallImage} />
 
-                    <Text style={{ fontFamily: 'lato-bold', fontSize: 15 }}>
-                      {order.meal.mealName}
+
+      {/* card */}
+      {/* <View style={styles.card}> */}
+      <ScrollView style={[styles.card, { maxHeight: '80%', minHeight: 'auto' }]}
+        contentContainerStyle={{ padding: 15 }}
+        showsVerticalScrollIndicator={false}
+        renderToHardwareTextureAndroid>
+        {!loading ? (
+          orderData && orderData?.length > 0 ? (
+            orderData.map((order, index) => (
+              <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15 }}>
+                  <Image source={{ uri: order.meal.mealPic }} style={styles.smallImage} />
+
+                  <Text style={{ fontFamily: 'lato-bold', fontSize: 15 }}>
+                    {order.meal.mealName}
+                  </Text>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: "center", gap: 10 }}>
+                  <View style={{ alignItems: 'flex-end', gap: 5 }}>
+                    <Text style={{ fontFamily: 'lato-bold', fontSize: 13 }}>
+                      {order.status === 0 ? 'Not Collected' : order.status === 1 ? 'Collected' : 'Cancelled'}
+                    </Text>
+                    <Text style={{ fontFamily: 'lato-sb', fontSize: 10, color: Colors.grey }}>
+                      {order.orderDate.toString()}
                     </Text>
                   </View>
-                  <View style={{ flexDirection: 'row', alignItems: "center", gap: 10 }}>
-                    <View style={{ alignItems: 'flex-end', gap: 5 }}>
-                      <Text style={{ fontFamily: 'lato-bold', fontSize: 13 }}>
-                        {order.status === 0 ? 'Not Collected' : order.status === 1 ? 'Collected' : 'Cancelled'}
-                      </Text>
-                      <Text style={{ fontFamily: 'lato-sb', fontSize: 10, color: Colors.grey }}>
-                        {order.orderDate.toString()}
-                      </Text>
-                    </View>
-                    <TouchableOpacity>
-                      <MaterialIcons name="more-horiz" size={24} />
-                    </TouchableOpacity>
-                  </View>
+                  <TouchableOpacity>
+                    <MaterialIcons name="more-horiz" size={24} onPress={handleMoreButtonClick} />
+                  </TouchableOpacity>
                 </View>
-              )
-              )
-            ) : <Text>No Meals Ordered</Text>) :
-            <ActivityIndicator animating={loading} />
-          }
 
-        </ScrollView>
-      </View>
+              </View>
+            )
+            )
+          ) : <Text>No Meals Ordered</Text>) :
+          <ActivityIndicator animating={loading} />
+        }
+
+      </ScrollView>
+      {/* </View> */}
+
 
       <View style={{ paddingTop: 20, alignItems: 'flex-end', paddingRight: 10 }}>
         <TouchableOpacity
@@ -131,6 +172,17 @@ const OrderedMeals = () => {
           <Text style={{ fontFamily: 'lato-bold' }}>Order Meals</Text>
         </TouchableOpacity>
       </View>
+
+      {popupVisible && (
+        <Animated.View style={[styles.popup, { top: popupPosition.top, left: popupPosition.left }, popupStyle]}
+          entering={FadeIn} exiting={FadeOut}>
+          <TouchableOpacity onPress={() => handleOptionSelect('Option 1')}>
+            <Text>Cancel Order</Text>
+          </TouchableOpacity>
+          {/* Add more options as needed */}
+        </Animated.View>
+      )}
+
 
     </View>
   )
@@ -177,5 +229,14 @@ const styles = StyleSheet.create({
     height: 45,
     width: 45,
     borderRadius: 25
-  }
+  },
+  popup: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: 'gray',
+    elevation: 5,
+  },
 })

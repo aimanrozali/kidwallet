@@ -3,6 +3,7 @@ import axios from "axios";
 import * as SecureStore from 'expo-secure-store';
 import { API_URL } from "@/config";
 import { useRouter, useSegments } from "expo-router";
+import { Alert } from "react-native";
 
 interface AuthProps {
   authState?: { token: string | null; authenticated: boolean | null };
@@ -44,7 +45,29 @@ export const AuthProvider = ({ children }: any) => {
         });
       }
 
-      //console.log(authState);
+      // if (await testTokenValidation()) {
+      //   if (token) {
+      //     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      //     setAuthState({
+      //       token: token,
+      //       authenticated: true,
+      //     });
+      //   }
+      // }
+      // else {
+      //   await SecureStore.deleteItemAsync(TOKEN_KEY);
+      //   axios.defaults.headers.common["Authorization"] = "";
+      //   setAuthState({
+      //     token: null,
+      //     authenticated: false,
+      //   })
+      //   router.push("/Login");
+      // }
+
+
+
+
+      console.log(axios.defaults.headers.common['Authorization']);
 
     };
     loadToken();
@@ -73,6 +96,23 @@ export const AuthProvider = ({ children }: any) => {
   //     return { error: true, msg: (e as any).response.data.message };
   //   }
   // };
+
+  const testTokenValidation = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/Auth/ValidateToken`, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log(response.data);
+      return true;
+    } catch (error) {
+      Alert.alert("Session Expired", "Please Login Again");
+      console.error("Error at validation", error);
+      return false;
+    }
+  }
 
   const register = async (email: string, password: string, userName: string, phoneNumber: string) => {
     try {

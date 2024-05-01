@@ -1,23 +1,21 @@
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native'
-import React, { useEffect, useLayoutEffect, useState } from 'react'
-import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useEffect, useState } from 'react'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { Ionicons } from '@expo/vector-icons';
 import { defaultStyles } from '@/constants/Styles';
 import Colors from '@/constants/Colors';
 import { useAppSelector, useAppDispatch } from '@/hooks/hooks';
 import { CartItem, clearCart, selectTotalPrice } from '@/hooks/CardReducer';
 import { RootState } from '@/store/store';
-import { initialState } from '@/hooks/DateReducer';
 import DatePicker from 'react-native-date-picker';
 import { ActivityIndicator } from 'react-native-paper';
 import axios from 'axios';
 import { API_URL } from '@/config';
-import { Student, Wallet } from '@/interfaces/student';
+import { Wallet } from '@/interfaces/student';
 import moment from 'moment';
 
 const ViewCart = () => {
 
-  const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -122,7 +120,12 @@ const ViewCart = () => {
       //console.log(total, "TOTAL");
       var id = walletData!.walletID.toString();
       var amount = total;
-      const response = await axios.post(`${API_URL}/api/Wallet`, { id, amount }, {
+      var transType = '3'
+      const response = await axios.post(`${API_URL}/api/Wallet`, {
+        Id: id,
+        Amount: amount,
+        PaymentType: transType
+      }, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -227,14 +230,14 @@ const ViewCart = () => {
             </View>
           </View>
 
-          <View style={{ paddingTop: 10 }}>
+          {/* <View style={{ paddingTop: 10 }}>
             <Text style={styles.headerText}>
               School
             </Text>
             <View style={[styles.card, {}]}>
               <Text>SK Bayan Lepas</Text>
             </View>
-          </View>
+          </View> */}
 
           {/* Item Order List */}
           <View style={{ paddingTop: 10 }}>

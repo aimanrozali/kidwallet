@@ -14,5 +14,14 @@ export interface Wallet {
   walletBalance: number;
   currency: string;
   dailySpendingLimit: number;
-  studentID: number;
+  student: Student;
+  transactions: Transaction[];
+}
+
+export interface Transaction {
+  walletID: string;
+  transactionType: number;
+  amount: number;
+  transactionTime: Date;
+  description: string;
 }

@@ -1,36 +1,50 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, KeyboardAvoidingView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { API_URL } from '@/config';
 import axios from 'axios';
-import { Student } from '@/interfaces/student';
+import { Student, Wallet } from '@/interfaces/student';
 import { defaultStyles } from '@/constants/Styles';
 import Colors from '@/constants/Colors';
 import { User } from '@/interfaces/user';
-import { usePaymentSheet } from '@stripe/stripe-react-native';
+import { usePlatformPay, PlatformPayButton, PlatformPay } from '@stripe/stripe-react-native';
+import { useDispatch } from 'react-redux';
+import { setEmail, setPayAmount, setWallet } from '@/hooks/PaymentReducer';
 
 const TopupScreen = () => {
 
-  const router = useRouter();
-  const [walletData, setWalletData] = useState<Student | null>(null);
-  const [userData, setUserData] = useState<User | null>(null);
-  const [amount, setAmount] = useState("");
-  const [initPay, setInitPay] = useState(false);
+  const { isPlatformPaySupported, confirmPlatformPayPayment } = usePlatformPay();
 
-  const [ready, setReady] = useState(false);
-  const { initPaymentSheet, presentPaymentSheet, loading } = usePaymentSheet();
+  const router = useRouter();
+  const [walletData, setWalletData] = useState<Wallet | null>(null);
+  const [userData, setUserData] = useState<User | null>(null);
+  const [amount, setAmount] = useState<number>();
+  const [supportGPay, setSupportGPay] = useState(true);
+  const dispatch = useDispatch();
+
+  // const [ready, setReady] = useState(false);
+  // const { initPaymentSheet, presentPaymentSheet, loading, resetPaymentSheetCustomer } = usePaymentSheet();
 
   const { ewalletID } = useLocalSearchParams<{ ewalletID: string }>();
-  console.log(ewalletID);
+  //console.log(ewalletID);
+
+  // useEffect(() => {
+  //   initialisePaymentSheet();
+  // }, []);
 
   useEffect(() => {
-    initialisePaymentSheet();
-  }, [initPay]);
+    (async function () {
+      if (!(await isPlatformPaySupported({ googlePay: { testEnv: true } }))) {
+        setSupportGPay(false);
+        return;
+      }
+    })();
+  }, [])
 
   useEffect(() => {
-    const url = `${API_URL}/api/Student`;
-    console.log(url + `/${ewalletID}`);
+    const url = `${API_URL}/api/Wallet`;
+    //console.log(url + `/${ewalletID}`);
 
     const fetchData = async () => {
       try {
@@ -38,7 +52,7 @@ const TopupScreen = () => {
         const responseJson = response.data.data;
         setWalletData(responseJson);
 
-        console.log("At Wallet:", responseJson); // Log the updated value here
+        //console.log("At Wallet:", responseJson); // Log the updated value here
 
       } catch (err) {
         console.error("At Wallet", err);
@@ -58,7 +72,7 @@ const TopupScreen = () => {
         const responseJson = response.data.data;
         setUserData(responseJson);
 
-        console.log("At Wallet User Data:", responseJson); // Log the updated value here
+        //console.log("At Wallet User Data:", responseJson); // Log the updated value here
 
       } catch (err) {
         console.error("At Wallet", err);
@@ -75,49 +89,48 @@ const TopupScreen = () => {
     setAmount(numericText);
   };
 
-  const initialisePaymentSheet = async () => {
-    const { paymentIntent, ephemeralKey, customer } = await fetchPaymentSheetParams();
-
-    const { error } = await initPaymentSheet({
-      customerId: customer,
-      customerEphemeralKeySecret: ephemeralKey,
-      paymentIntentClientSecret: paymentIntent,
-      merchantDisplayName: 'KidWallet App',
-
-    });
-
-    if (error) {
-      Alert.alert(`Error code: ${error.code}`, error.message);
-    } else {
-      setReady(true);
-    }
-  }
-
   const fetchPaymentSheetParams = async () => {
     const response = await axios.post(`${API_URL}/api/Payment/InitPayment`, {
       amount: amount,
       email: userData?.email,
-      userID: 1
+      WalletID: walletData?.walletID,
     });
-    const { paymentIntent, ephemeralKey, customer } = response.data;
+    const { paymentIntent } = response.data;
 
     return {
       paymentIntent,
-      ephemeralKey,
-      customer
     };
   };
 
-  async function topup() {
-    setInitPay(!initPay);
-    const { error } = await presentPaymentSheet();
+  const pay = async () => {
+    const { paymentIntent } = await fetchPaymentSheetParams();
+
+    const { error } = await confirmPlatformPayPayment(
+      paymentIntent,
+      {
+        googlePay: {
+          testEnv: true,
+          merchantName: 'KidWallet App',
+          merchantCountryCode: 'MY',
+          currencyCode: 'MYR',
+
+        },
+      }
+    );
 
     if (error) {
-      Alert.alert(`Error code: ${error.code}`, error.message);
-    } else {
-      Alert.alert('Success', 'The Payment Confirmed Successfully', [{ text: 'OK', onPress: () => router.navigate(`(auth)/ewallet/${walletData?.studentID}`) }]);
-      setReady(false);
+      Alert.alert(error.code, error.message, [{ text: 'OK', onPress: () => router.back() }]);
+      // Update UI to prompt user to retry payment (and possibly another payment method)
+      return;
     }
+    Alert.alert('Success', 'The payment was confirmed successfully.', [{ text: 'OK', onPress: () => router.back() }]);
+  }
+
+  const payByCard = async () => {
+    dispatch(setWallet(walletData?.walletID));
+    dispatch(setPayAmount(amount));
+    dispatch(setEmail(userData?.email));
+    router.push(`/(auth)/ewallet/paymentScreen?studentID=${walletData?.student.studentID}`);
   }
 
 
@@ -139,7 +152,7 @@ const TopupScreen = () => {
             Add funds for
           </Text>
           <Text style={{ fontFamily: 'lato-bold', fontSize: 15 }}>
-            {walletData?.studentName}
+            {walletData?.student.studentName}
           </Text>
         </View>
 
@@ -150,42 +163,28 @@ const TopupScreen = () => {
             <TextInput
               inputMode='numeric'
               placeholder='10.00'
-              value={amount}
+              value={amount?.toString()}
               onChangeText={handleChangeText}>
             </TextInput>
           </View>
-          {/* <View style={styles.outerRow}>
-          <View style={styles.innerRow}>
-            <TouchableOpacity style={styles.btn}>
-              <Text>RM 5</Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text>RM 5</Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text>RM 5</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.innerRow}>
-            <TouchableOpacity>
-              <Text>RM 5</Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text>RM 5</Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text>RM 5</Text>
-            </TouchableOpacity>
-          </View>
-        </View> */}
         </View>
       </View>
 
       {/* Footer */}
-      <View style={styles.footer}>
+
+
+      <View style={[styles.footer, { gap: 10 }]}>
+        <PlatformPayButton
+          type={PlatformPay.ButtonType.Pay}
+          onPress={pay}
+          style={{
+            width: '100%',
+            height: 50,
+          }}
+        />
         <TouchableOpacity style={styles.btn}
-          onPress={topup}>
-          <Text>Add Funds</Text>
+          onPress={payByCard}>
+          <Text>Pay With Card, GrabPay</Text>
         </TouchableOpacity>
       </View>
     </>
@@ -248,7 +247,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     position: 'absolute',
-    height: 80,
+    height: 'auto',
     bottom: 0,
     left: 0,
     right: 0,

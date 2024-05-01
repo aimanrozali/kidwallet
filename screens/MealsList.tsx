@@ -1,23 +1,25 @@
-import { View, Text, StyleSheet, TouchableOpacity, Touchable, ScrollView, Image, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ActivityIndicator, Modal, Pressable } from 'react-native'
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'expo-router'
-import { FontAwesome5, Fontisto, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { defaultStyles } from '@/constants/Styles';
+import { FontAwesome5, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
-import MealPage from '@/app/(auth)/orderMeals/[mealID]';
-import { Drinks } from '@/interfaces/drinks';
 import { Meals } from '@/interfaces/meals';
 import { API_URL } from '@/config';
 import axios from 'axios';
-import DatePicker from 'react-native-date-picker';
+import { Calendar } from 'react-native-calendars';
 import { useAppSelector, useAppDispatch } from '@/hooks/hooks';
 import { setDates } from '@/hooks/DateReducer';
 import { setName } from '@/hooks/NameReducer';
 import { RootState } from '@/store/store';
+import { BlurView } from '@react-native-community/blur';
 
 interface Props {
   name: string,
   id: string
+}
+
+interface OrderDateData {
+  orderDate: string
 }
 
 const MealsList = ({ name, id }: Props) => {
@@ -27,6 +29,7 @@ const MealsList = ({ name, id }: Props) => {
   const [drink, setDrink] = useState<Meals[] | null>(null);
   const [loadedMeal, setLoadedMeal] = useState(false);
   const [loadedDrink, setLoadedDrink] = useState(false);
+  const [orderDate, setOrderDate] = useState<OrderDateData[]>();
 
   //console.log("At MealList::", name);
 
@@ -73,6 +76,26 @@ const MealsList = ({ name, id }: Props) => {
 
   }, []);
 
+  useEffect(() => {
+    const url = `${API_URL}/api/Order/GetOrdersDate/${id}`;
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(url);
+        const responseJson = response.data.data;
+        setOrderDate(responseJson);
+
+        console.log("At OrderDate:", responseJson); // Log the updated value here
+
+
+      } catch (err) {
+        console.error("At OrderDate", err);
+      }
+    }
+
+    fetchData();
+  }, [])
+
 
   const dateFromStore = useAppSelector((state) => state.date.date);
   const orderName = useAppSelector((state) => state.name.name);
@@ -81,12 +104,10 @@ const MealsList = ({ name, id }: Props) => {
 
   let todayDate = new Date()
   var today = todayDate.toLocaleDateString("en-MY", { month: 'numeric', year: 'numeric', day: 'numeric' });
-  const [typeOrder, setTypeOrder] = useState(0); //0 for meal, 1 for drinks
   const router = useRouter();
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
   const [cartEmpty, setCartEmpty] = useState(false);
-  const [cartState, setCartState] = useState([]);
 
   useEffect(() => {
     if (cart?.length === 0) {
@@ -94,17 +115,25 @@ const MealsList = ({ name, id }: Props) => {
     } else {
       setCartEmpty(false);
     }
+    dispatch(setName(name));
   }, [])
 
   useEffect(() => {
     dispatch(setDates(date.toISOString()));
     console.log("Date::", dateFromStore);
+    console.log("DateinLocaleDate::", date.toISOString().split('T')[0]);
   }, [date]);
 
-  useEffect(() => {
-    dispatch(setName(name));
-    console.log("Name::", orderName);
-  }, []);
+  const getMarkedDates = useMemo(() => {
+    const markedDates: { [key: string]: { marked: boolean, dotColor: string, selected?: boolean } } = {};
+    orderDate?.forEach(item => {
+      const date = item.orderDate;
+      markedDates[date] = { marked: true, dotColor: 'green' };
+    });
+    //Add today date to markedDates
+    markedDates[date.toISOString().split('T')[0]] = { marked: false, dotColor: 'red', selected: true };
+    return markedDates;
+  }, [orderDate, date]);
 
 
 
@@ -136,21 +165,28 @@ const MealsList = ({ name, id }: Props) => {
             {date.toLocaleDateString("en-MY", { month: 'numeric', year: 'numeric', day: 'numeric' })}
           </Text>
         </TouchableOpacity>
-        <DatePicker
-          modal
-          mode='date'
-          locale='en-MY'
-          open={open}
-          date={date}
-          minimumDate={todayDate}
-          onConfirm={(date) => {
-            setDate(date)
-            setOpen(false)
-          }}
-          onCancel={() => {
-            setOpen(false)
-          }}
-        />
+        <Modal visible={open} transparent animationType="fade" onDismiss={() => setOpen(false)}>
+          <View style={styles.modalContent}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.title}>When you want to order?</Text>
+              <Pressable onPress={() => setOpen(false)}>
+                <MaterialIcons name="close" color="#fff" size={22} />
+              </Pressable>
+            </View>
+            <Calendar
+              markedDates={getMarkedDates}
+              onDayPress={(day) => setDate(new Date(day.dateString))}
+            />
+            <View style={styles.saveContainer}>
+              <TouchableOpacity style={styles.saveButton}
+                onPress={() => setOpen(false)}>
+                <Text>Save</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+        </Modal>
+
       </View>
 
       {/* Food Card */}
@@ -237,12 +273,20 @@ const MealsList = ({ name, id }: Props) => {
           <Text style={{ fontFamily: 'lato-bold', fontSize: 13, padding: 10 }}>View Cart</Text>
         </TouchableOpacity>
       </View>
+      {open &&
+        <BlurView
+          style={styles.absolute}
+          blurType='chromeMaterialLight'
+          blurAmount={10}
+          reducedTransparencyFallbackColor="white"
+        />
+      }
 
     </View>
   )
 }
 
-export default MealsList
+export default MealsList;
 
 const styles = StyleSheet.create({
   header: {
@@ -353,5 +397,60 @@ const styles = StyleSheet.create({
     height: 45,
     width: 45,
     borderRadius: 25
+  },
+  modalContent: {
+    height: '25%',
+    width: '80%',
+    backgroundColor: '#25292e',
+    borderTopRightRadius: 18,
+    borderTopLeftRadius: 18,
+    borderBottomLeftRadius: 18,
+    borderBottomRightRadius: 18,
+    position: 'absolute',
+    bottom: '50%',
+    alignSelf: 'center',
+  },
+  absolute: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0
+  },
+  titleContainer: {
+    height: '16%',
+    backgroundColor: '#464C55',
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  saveContainer: {
+    height: '25%',
+    backgroundColor: '#464C55',
+    borderBottomRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  title: {
+    color: '#fff',
+    fontSize: 16,
+    fontFamily: 'lato-bold',
+  },
+  saveButton: {
+    backgroundColor: 'white',
+    height: 40,
+    width: 80,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    left: '400%'
   }
 })

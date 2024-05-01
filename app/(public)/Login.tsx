@@ -4,11 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { defaultStyles } from '@/constants/Styles'
 import { Ionicons } from '@expo/vector-icons'
 import { useAuth } from '@/context/AuthContext'
-import axios from 'axios'
-import { API_URL } from '@/config'
 import { router } from 'expo-router'
-import safeStringify from 'safe-stringify';
 import * as yup from 'yup'
+import { ActivityIndicator } from 'react-native-paper'
 
 const Login = () => {
 
@@ -25,17 +23,21 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const { onLogin } = useAuth();
 
   const login = async () => {
     try {
+      setLoading(true);
       await loginValidationSchema.validate({ email, password });
       await onLogin!(email, password);
+      setLoading(false);
 
 
     } catch (err) {
       Alert.alert('Email must be valid and password must be at least 8 characters');
+      setLoading(false);
     }
 
     // if (result.data.status) {
@@ -103,7 +105,15 @@ const Login = () => {
             style={[defaultStyles.btn, { marginHorizontal: 40, marginTop: 10 }]}
             onPress={login}
           >
-            <Text style={defaultStyles.btnText}>Login</Text>
+            {loading ?
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15 }}>
+                <Text style={defaultStyles.btnText}>Logging in...</Text>
+                <ActivityIndicator animating={loading} color='black' />
+              </View>
+              :
+              <Text style={defaultStyles.btnText}>Login</Text>
+            }
+
           </TouchableOpacity>
         </View>
       </TouchableWithoutFeedback>
@@ -144,4 +154,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     paddingTop: 5
   },
+  spinner: {
+
+  }
 })

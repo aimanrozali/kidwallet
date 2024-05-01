@@ -137,7 +137,7 @@ const Dashboard = () => {
               {studentData?.map((item, index) => (
                 <TouchableOpacity
                   key={index}
-                  onPress={() => router.navigate(`/(auth)/ewallet/${item.studentID}`)}
+                  onPress={() => router.navigate(`/(auth)/ewallet/${item.wallet.walletID}`)}
                   style={[styles.card, { flexDirection: 'row', alignItems: 'center', padding: 5, justifyContent: 'space-between' }]}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <FontAwesome name='dollar' size={26} style={{ padding: 10, alignItems: 'center' }} />
