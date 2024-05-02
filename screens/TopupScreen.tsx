@@ -83,6 +83,14 @@ const TopupScreen = () => {
 
   }, []);
 
+  const checkValue = () => {
+    if (amount === undefined || amount === 0) {
+      Alert.alert('Invalid Amount', 'Please enter a valid amount to top up');
+      return false;
+    }
+    return true;
+  }
+
   const handleChangeText = (text: any) => {
     // Remove any non-numeric characters from the input
     const numericText = text.replace(/[^0-9]/g, '');
@@ -103,35 +111,42 @@ const TopupScreen = () => {
   };
 
   const pay = async () => {
-    const { paymentIntent } = await fetchPaymentSheetParams();
+    if (checkValue()) {
+      const { paymentIntent } = await fetchPaymentSheetParams();
 
-    const { error } = await confirmPlatformPayPayment(
-      paymentIntent,
-      {
-        googlePay: {
-          testEnv: true,
-          merchantName: 'KidWallet App',
-          merchantCountryCode: 'MY',
-          currencyCode: 'MYR',
+      const { error } = await confirmPlatformPayPayment(
+        paymentIntent,
+        {
+          googlePay: {
+            testEnv: true,
+            merchantName: 'KidWallet App',
+            merchantCountryCode: 'MY',
+            currencyCode: 'MYR',
 
-        },
+          },
+        }
+      );
+      if (error) {
+        Alert.alert(error.code, error.message, [{ text: 'OK', onPress: () => router.back() }]);
+        // Update UI to prompt user to retry payment (and possibly another payment method)
+        return;
       }
-    );
-
-    if (error) {
-      Alert.alert(error.code, error.message, [{ text: 'OK', onPress: () => router.back() }]);
-      // Update UI to prompt user to retry payment (and possibly another payment method)
-      return;
+      Alert.alert('Success', 'The payment was confirmed successfully.', [{ text: 'OK', onPress: () => router.back() }]);
     }
-    Alert.alert('Success', 'The payment was confirmed successfully.', [{ text: 'OK', onPress: () => router.back() }]);
+
   }
 
   const payByCard = async () => {
-    dispatch(setWallet(walletData?.walletID));
-    dispatch(setPayAmount(amount));
-    dispatch(setEmail(userData?.email));
-    router.push(`/(auth)/ewallet/paymentScreen?studentID=${walletData?.student.studentID}`);
+    if (checkValue()) {
+      dispatch(setWallet(walletData?.walletID));
+      dispatch(setPayAmount(amount));
+      dispatch(setEmail(userData?.email));
+      router.push(`/(auth)/ewallet/paymentScreen?studentID=${walletData?.student.studentID}`);
+    }
+
   }
+
+
 
 
   return (

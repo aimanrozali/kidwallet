@@ -1,7 +1,7 @@
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Modal } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Modal, TouchableHighlight, Alert } from 'react-native'
 import React, { DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_REACT_NODES, ReactEventHandler, ReactNode, useEffect, useState } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Entypo, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { defaultStyles } from '@/constants/Styles';
 import { Student } from '@/interfaces/student';
@@ -12,6 +12,7 @@ import { ActivityIndicator } from 'react-native-paper';
 import { createShimmerPlaceholder } from 'react-native-shimmer-placeholder';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeIn, FadeOut, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { SwipeListView } from 'react-native-swipe-list-view';
 
 
 const OrderedMeals = () => {
@@ -19,44 +20,59 @@ const OrderedMeals = () => {
   const [orderData, setOrderData] = useState<Orders[] | null>(null);
   const [student, setStudent] = useState<Student | null>(null);
   const [loading, setLoading] = useState(true);
+  const [dataChange, setDataChange] = useState(false);
   const ShimmerPlaceholder = createShimmerPlaceholder(LinearGradient);
 
   const { id } = useLocalSearchParams<{ id: string }>();
 
   // console.log(id);
 
-  const [popupVisible, setPopupVisible] = useState(false);
-  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
+  const cancelOrder = async (orderID: number) => {
+    var responseJson;
+    try {
+      console.log("Cancelling Order", orderID);
+      const response = await axios.put(`${API_URL}/api/Order/UpdateOrderStatus?id=${orderID}&status=2`)
+      responseJson = response.data;
 
-  const opacity = useSharedValue(0);
+      console.log("At UpdateOrder:", responseJson); // Log the updated value here
 
-  useEffect(() => {
-    if (popupVisible) {
-      opacity.value = withSpring(1);
-    } else {
-      opacity.value = withSpring(0);
+    } catch (err) {
+      console.error("At UpdateOrder", err);
     }
-  }, [popupVisible, opacity]);
 
-  const popupStyle = useAnimatedStyle(() => {
-    return {
-      opacity: opacity.value,
-    };
-  });
+    return responseJson;
+  }
 
-  const handleMoreButtonClick = (event: any) => {
+  const confirmCancelOrder = async (orderID: number) => {
+    var res = await cancelOrder(orderID);
+    if (res.success) {
+      setDataChange(!dataChange);
+      Alert.alert("Order Cancelled Successfully");
 
-    setPopupVisible(!popupVisible);
-    const { pageX, pageY } = event.nativeEvent;
-    setPopupPosition({ top: pageY - 49, left: pageX - 60 });
-    //wait for 500ms
-    setPopupVisible(true);
-  };
+    } else {
+      Alert.alert("Failed to Cancel Order", res.message);
+    }
+  }
 
-  const handleOptionSelect = (option: string) => {
+  const handleOptionSelect = async (orderID: number) => {
     // Handle the selected option
-    console.log('Selected option:', option);
-    setPopupVisible(false); // Close the popup after option selection
+    console.log('Selected option:', orderID);
+    Alert.alert(
+      "Cancel Order",
+      "Are you sure you want to cancel this order?",
+      [
+        {
+          text: "No", // Button text for cancel action
+          style: "cancel", // Style for the cancel button
+        },
+        {
+          text: "Yes", // Button text for okay action
+          onPress: () => {
+            confirmCancelOrder(orderID);
+          },
+        },
+      ]
+    );
   };
 
   useEffect(() => {
@@ -100,7 +116,7 @@ const OrderedMeals = () => {
     }
 
     fetchData();
-  }, [])
+  }, [dataChange])
 
 
   const router = useRouter();
@@ -120,11 +136,57 @@ const OrderedMeals = () => {
         </View>
       </View>
 
+      <SwipeListView
+        style={[styles.card, { maxHeight: '80%', minHeight: 'auto' }]}
+        contentContainerStyle={{ paddingHorizontal: 15, paddingTop: 5 }}
+        data={orderData}
+        renderItem={(data, rowMap) => (
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, backgroundColor: '#fff', borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#c7c7c7' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15 }}>
+              <Image source={{ uri: data.item.meal.mealPic }} style={styles.smallImage} />
+
+              <Text style={{ fontFamily: 'lato-bold', fontSize: 15 }}>
+                {data.item.meal.mealName}
+              </Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: "center", gap: 10 }}>
+              <View style={{ alignItems: 'flex-end', gap: 5 }}>
+                <Text style={{ fontFamily: 'lato-bold', fontSize: 13 }}>
+                  {data.item.status === 0 ? 'Not Collected' : data.item.status === 1 ? 'Collected' : 'Cancelled'}
+                </Text>
+                <Text style={{ fontFamily: 'lato-sb', fontSize: 10, color: Colors.grey }}>
+                  {data.item.orderDate.toString()}
+                </Text>
+              </View>
+              {/* <TouchableOpacity>
+                <MaterialIcons name="more-horiz" size={24} onPress={handleMoreButtonClick} />
+              </TouchableOpacity> */}
+            </View>
+
+          </View>
+        )}
+        renderHiddenItem={(data, rowMap) => (
+          <View style={styles.rowBack}>
+            <View style={styles.innerRowBack}>
+              <TouchableOpacity style={styles.btnCancel} onPress={() => handleOptionSelect(data.item.id)}>
+                <Entypo name="cross" size={24} color={"#FF6666"} />
+                <Text style={styles.cancelText}>Cancel Order</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+        rightOpenValue={-85}
+
+      >
+        {orderData?.length === null ? (<Text>No Ordered Meals</Text>) : null}
+
+      </SwipeListView>
+
 
 
       {/* card */}
       {/* <View style={styles.card}> */}
-      <ScrollView style={[styles.card, { maxHeight: '80%', minHeight: 'auto' }]}
+      {/* <ScrollView style={[styles.card, { maxHeight: '80%', minHeight: 'auto' }]}
         contentContainerStyle={{ padding: 15 }}
         showsVerticalScrollIndicator={false}
         renderToHardwareTextureAndroid>
@@ -160,7 +222,7 @@ const OrderedMeals = () => {
           <ActivityIndicator animating={loading} />
         }
 
-      </ScrollView>
+      </ScrollView> */}
       {/* </View> */}
 
 
@@ -172,17 +234,6 @@ const OrderedMeals = () => {
           <Text style={{ fontFamily: 'lato-bold' }}>Order Meals</Text>
         </TouchableOpacity>
       </View>
-
-      {popupVisible && (
-        <Animated.View style={[styles.popup, { top: popupPosition.top, left: popupPosition.left }, popupStyle]}
-          entering={FadeIn} exiting={FadeOut}>
-          <TouchableOpacity onPress={() => handleOptionSelect('Option 1')}>
-            <Text>Cancel Order</Text>
-          </TouchableOpacity>
-          {/* Add more options as needed */}
-        </Animated.View>
-      )}
-
 
     </View>
   )
@@ -239,4 +290,23 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     elevation: 5,
   },
+  rowBack: {
+    alignItems: 'center', // Center vertically
+    justifyContent: 'flex-end', // Align to the right
+    flexDirection: 'row', // Align items in a row
+  },
+  btnCancel: {
+    paddingVertical: 10,
+    alignItems: 'center',
+    height: '100%',
+    width: '100%'
+  },
+  cancelText: {
+    fontFamily: 'lato-bold',
+    fontSize: 13,
+    color: "#FF6666"
+  },
+  innerRowBack: {
+    alignContent: 'center'
+  }
 })

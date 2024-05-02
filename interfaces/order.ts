@@ -1,6 +1,7 @@
 import { Meals } from "./meals";
 
 export interface Orders {
+  id: number,
   meal: Meals,
   orderDate: Date,
   quantity: number,
