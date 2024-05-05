@@ -138,7 +138,8 @@ export const AuthProvider = ({ children }: any) => {
   };
 
   const login = async (email: string, password: string) => {
-    const result = await axios.post(`${API_URL}/Auth/Login`, { email, password }, {
+    const deviceToken = await SecureStore.getItemAsync('DEVICE_TOKEN');
+    const result = await axios.post(`${API_URL}/Auth/Login`, { email, password, deviceToken }, {
       headers: {
         'Content-Type': 'application/json'
       }
@@ -159,15 +160,6 @@ export const AuthProvider = ({ children }: any) => {
       .catch((err) => {
         console.error(err);
       });
-    //console.log(authState);
-    //console.log("Header", axios.defaults.headers.common['Authorization'])
-
-    // setAuthState({
-    //   token: result.data.data,
-    //   authenticated: true
-    // });
-
-    // axios.defaults.headers.common['Authorization'] = `Bearer ${result.data.data}`;
 
 
     return result;

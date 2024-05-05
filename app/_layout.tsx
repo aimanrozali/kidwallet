@@ -5,10 +5,15 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { StripeProvider } from '@stripe/stripe-react-native';
 import { useFonts } from 'expo-font';
-import { Stack, Tabs } from 'expo-router';
+import { router, Stack, Tabs } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { Provider } from 'react-redux';
+import messaging from '@react-native-firebase/messaging';
+import Notifications from 'expo-notifications';
+import NotificationHandler from '@/utils/NotificationHandler';
+import { PermissionsAndroid } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
 
 
 export {
@@ -32,6 +37,32 @@ export default function RootLayout() {
     'lato-sb': require('../assets/fonts/Lato-SemiBold.ttf'),
   });
 
+  useEffect(() => {
+    const requestUserPermission = async () => {
+      PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+      const authStatus = await messaging().requestPermission();
+      const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+      if (enabled) {
+        console.log('Authorization status:', authStatus);
+        const token = await messaging().getToken();
+        //store token in secure storage
+        await SecureStore.setItemAsync('DEVICE_TOKEN', token);
+        const tokenStored = await SecureStore.getItemAsync('DEVICE_TOKEN');
+
+        console.log('FCM token:', tokenStored);
+      }
+    };
+
+    requestUserPermission();
+  }, [])
+
+
+
+
+
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
@@ -46,6 +77,11 @@ export default function RootLayout() {
   if (!loaded) {
     return null;
   }
+
+
+
+
+
 
   return (
     <AuthProvider>

@@ -5,6 +5,8 @@ import Dashboard from '@/screens/Dashboard'
 import { API_URL } from '@/config'
 import axios from 'axios'
 import { User } from '@/interfaces/user';
+import messaging from '@react-native-firebase/messaging';
+import { NativeDevicePushToken } from 'expo-notifications';
 
 
 
@@ -28,9 +30,11 @@ const index = () => {
     // }
 
     // fetchData();
+    console.log();
     console.log("This page")
 
   }, []);
+
 
 
 
