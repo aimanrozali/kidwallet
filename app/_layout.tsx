@@ -10,10 +10,9 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import messaging from '@react-native-firebase/messaging';
-import Notifications from 'expo-notifications';
-import NotificationHandler from '@/utils/NotificationHandler';
-import { PermissionsAndroid } from 'react-native';
+import { Alert, PermissionsAndroid } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import notifee, { AndroidImportance } from '@notifee/react-native';
 
 
 export {
@@ -58,6 +57,31 @@ export default function RootLayout() {
 
     requestUserPermission();
   }, [])
+
+  async function onMessageReceived(message: any) {
+
+    const channelId = await notifee.createChannel({
+      id: 'default',
+      name: 'Default Channel',
+      importance: AndroidImportance.HIGH,
+    });
+    console.log('onMessageReceived', message);
+    // notifee.displayNotification(JSON.parse(JSON.stringify(message)));
+    await notifee.displayNotification({
+      title: message.notification.title,
+      body: message.notification.body,
+      android: {
+        channelId,
+        importance: AndroidImportance.HIGH,
+      },
+    });
+  }
+
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(onMessageReceived);
+
+    return unsubscribe;
+  }, []);
 
 
 

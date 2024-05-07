@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "65385385668",
+    "project_id": "kidwallet-push-notification",
+    "storage_bucket": "kidwallet-push-notification.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:65385385668:android:106362da7740c30a520391",
+        "android_client_info": {
+          "package_name": "com.aiman_rozali.kidwallet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBtBeozA0eYC2FSQS3bIuYV23Zakj9nkQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

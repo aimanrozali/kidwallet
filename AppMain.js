@@ -4,7 +4,13 @@ import '@expo/metro-runtime';
 
 import { App } from 'expo-router/build/qualified-entry';
 import { renderRootComponent } from 'expo-router/build/renderRootComponent';
+import messaging from '@react-native-firebase/messaging';
 
 // This file should only import and register the root. No components or exports
 // should be added here.
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  console.log('Message handled in the background!', remoteMessage);
+});
+
+
 renderRootComponent(App);
