@@ -12,6 +12,7 @@ export interface Student {
 export interface Wallet {
   walletID: string;
   walletBalance: number;
+  cardID: string;
   currency: string;
   dailySpendingLimit: number;
   student: Student;

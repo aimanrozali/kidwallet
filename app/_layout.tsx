@@ -13,6 +13,7 @@ import messaging from '@react-native-firebase/messaging';
 import { Alert, PermissionsAndroid } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import notifee, { AndroidImportance } from '@notifee/react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 
 export {
@@ -43,6 +44,7 @@ export default function RootLayout() {
       const enabled =
         authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
         authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
 
       if (enabled) {
         console.log('Authorization status:', authStatus);
