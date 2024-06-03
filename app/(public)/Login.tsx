@@ -124,6 +124,11 @@ const Login = () => {
           <Text style={{ fontFamily: 'lato-bold', fontSize: 13 }}>Sign Up</Text>
         </TouchableOpacity>
       </View>
+      <View style={{ paddingTop: 5 }}>
+        <TouchableOpacity onPress={() => router.navigate('ForgotPassword')}>
+          <Text style={{ fontFamily: 'lato-sb', fontSize: 13, textAlign: 'center', paddingTop: 10, color: 'black' }}>Forgot Password?</Text>
+        </TouchableOpacity>
+      </View>
       <TouchableOpacity style={{ alignItems: 'center', paddingTop: 40 }}>
         <Ionicons name='help-circle-outline' size={35} />
         <Text>Help</Text>

@@ -13,23 +13,23 @@ const DashboardGraph = () => {
       <View>
         <LineChart
           data={{
-            labels: ["January", "February", "March", "April", "May"],
+            labels: ["24 May", "25 May", "26 May", "27 May", "28 May"],
             datasets: [
               {
                 data: [
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100
+                  Math.random() * 10,
+                  Math.random() * 10,
+                  Math.random() * 10,
+                  Math.random() * 10,
+                  Math.random() * 10
                 ]
               }
             ]
           }}
           width={(Dimensions.get("window").width) - 20} // from react-native
           height={220}
-          yAxisLabel="$"
-          yAxisSuffix="k"
+          yAxisLabel="RM"
+          yAxisSuffix=""
           yAxisInterval={1} // optional, defaults to 1
           chartConfig={{
             backgroundColor: "#e26a00",

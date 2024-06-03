@@ -17,6 +17,7 @@ interface Nutritionfacts {
 
 export interface Meals {
   mealID: number;
+  vendorID: number;
   mealName: string;
   description: string;
   price: number;

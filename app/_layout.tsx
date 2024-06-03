@@ -130,6 +130,8 @@ function RootLayoutNav() {
       <Stack.Screen name='(public)/WelcomeScreen' options={{ headerShown: false }} />
       <Stack.Screen name='(public)/Login' options={{ headerShown: false }} />
       <Stack.Screen name='(public)/SignUp' options={{ headerShown: false }} />
+      <Stack.Screen name='(public)/EmailConfirmation' options={{ headerShown: false }} />
+      <Stack.Screen name='(public)/ForgotPassword' options={{ headerShown: false }} />
       <Stack.Screen name='(auth)/(tabs)' options={{ headerShown: false }} />
       <Stack.Screen name='(auth)/ewallet/[ewalletID]' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
       <Stack.Screen name='(auth)/ewallet/topupScreen' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />

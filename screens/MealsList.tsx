@@ -98,7 +98,7 @@ const MealsList = ({ name, id }: Props) => {
 
 
   const dateFromStore = useAppSelector((state) => state.date.date);
-  const orderName = useAppSelector((state) => state.name.name);
+  //const orderName = useAppSelector((state) => state.name.name);
   const cart = useAppSelector((state: RootState) => state.cart.cart[id]);
   const dispatch = useAppDispatch();
 
@@ -169,18 +169,19 @@ const MealsList = ({ name, id }: Props) => {
           <View style={styles.modalContent}>
             <View style={styles.titleContainer}>
               <Text style={styles.title}>When you want to order?</Text>
-              <Pressable onPress={() => setOpen(false)}>
+              <TouchableOpacity onPress={() => setOpen(false)}>
                 <MaterialIcons name="close" color="#fff" size={22} />
-              </Pressable>
+              </TouchableOpacity>
             </View>
             <Calendar
+              minDate={todayDate.toDateString()}
               markedDates={getMarkedDates}
               onDayPress={(day) => setDate(new Date(day.dateString))}
             />
             <View style={styles.saveContainer}>
               <TouchableOpacity style={styles.saveButton}
                 onPress={() => setOpen(false)}>
-                <Text>Save</Text>
+                <Text>Set Date</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -418,7 +419,7 @@ const styles = StyleSheet.create({
     right: 0
   },
   titleContainer: {
-    height: '16%',
+    height: '20%',
     backgroundColor: '#464C55',
     borderTopRightRadius: 10,
     borderTopLeftRadius: 10,
@@ -429,7 +430,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   saveContainer: {
-    height: '25%',
+    height: '30%',
     backgroundColor: '#464C55',
     borderBottomRightRadius: 10,
     borderBottomLeftRadius: 10,
@@ -437,7 +438,7 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
   },
   title: {
     color: '#fff',
@@ -451,6 +452,5 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    left: '400%'
   }
 })

@@ -32,6 +32,11 @@ const WelcomeScreen = () => {
             onPress={() => router.navigate("SignUp")}>
             <Text style={defaultStyles.btnText}>Sign Up</Text>
           </TouchableOpacity>
+          {/* <TouchableOpacity
+            style={[defaultStyles.btn, { paddingHorizontal: 40 }]}
+            onPress={() => router.navigate("EmailConfirmation")}>
+            <Text style={defaultStyles.btnText}>Confirmation (TEST)</Text>
+          </TouchableOpacity> */}
         </View>
       </View>
     </SafeAreaView>

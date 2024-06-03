@@ -6,6 +6,7 @@ export interface CartItem {
   mealName: string,
   price: number,
   quantity: number,
+  vendorID: number,
 }
 
 export interface RootState {

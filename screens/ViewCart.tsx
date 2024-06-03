@@ -25,6 +25,7 @@ const ViewCart = () => {
   const [cartEmpty, setCartEmpty] = useState(false);
   const [mealsData, setMealsData] = useState<number[]>([]);
   const [mealQuantity, setMealQuantity] = useState<number[]>([]);
+  const [vendorData, setVendorData] = useState<number[]>([]);
   //const { orderDate } = useLocalSearchParams<{ orderDate: string }>();
   // const [date, setDate] = useState(new Date(orderDate));
   // console.log("ORDER DATE::", orderDate);
@@ -61,10 +62,13 @@ const ViewCart = () => {
   useEffect(() => {
     const mealsData = cart.map(item => item.mealID);
     const mealQuantity = cart.map(item => item.quantity);
+    const vendorsData = cart.map(item => item.vendorID);
     setMealsData(mealsData as any);
     setMealQuantity(mealQuantity as any);
+    setVendorData(vendorsData as any);
     console.log("MEALS DATA::", mealsData);
     console.log("MEAL QUANTITY::", mealQuantity);
+    console.log("VENDORS DATA::", vendorsData);
   }, []);
 
 
@@ -153,6 +157,7 @@ const ViewCart = () => {
         OrderDate: modifyDate(),
         MealID: mealsData,
         Quantity: mealQuantity,
+        VendorID: vendorData
       },
       {
         headers: {

@@ -12,6 +12,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet from '@gorhom/bottom-sheet';
 import NFCBottomSheet from '@/components/PaymentBottomSheet';
 import TransactionList from '@/components/TransactionList';
+import SetThresholdModal from '@/components/SetThresholdModal';
 
 const WalletPage = () => {
   const router = useRouter();
@@ -25,6 +26,7 @@ const WalletPage = () => {
   const [nfcInitiated, setNfcInitiated] = useState(false);
   const [scanning, setScanning] = useState('scanning');
   const [switcher, setSwitcher] = useState(false);
+  const [isThresholdModalVisible, setThresholdModalVisible] = useState(false);
 
   const { ewalletID } = useLocalSearchParams<{ ewalletID: string }>();
 
@@ -86,6 +88,12 @@ const WalletPage = () => {
     openBottomSheet();
   };
 
+  const handleSetThreshold = (newThreshold: any) => {
+    if (walletData) {
+      setWalletData({ ...walletData, dailySpendingLimit: newThreshold });
+    }
+  };
+
   // Get Today's full date and day
   let todayDate = new Date();
   var today = todayDate.toLocaleDateString("en-MY", { month: 'long', year: 'numeric', day: 'numeric' });
@@ -122,7 +130,7 @@ const WalletPage = () => {
               <Ionicons name='add-circle-outline' size={35} />
               <Text style={styles.btnText}>Add Funds</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.btn}>
+            <TouchableOpacity style={styles.btn} onPress={() => setThresholdModalVisible(true)}>
               <FontAwesome6 name="edit" size={35} />
               <Text style={styles.btnText}>Edit Threshold</Text>
             </TouchableOpacity>
@@ -175,6 +183,20 @@ const WalletPage = () => {
         >
           <NFCBottomSheet errorState={{ error, setError }} eWalletID={ewalletID} scanState={{ scanning, setScanning }} switchers={{ switcher, setSwitcher }} complete={{ completed, setCompleted }} />
         </BottomSheet>
+
+        {
+          walletData?.dailySpendingLimit && (
+            <SetThresholdModal
+              isVisible={isThresholdModalVisible}
+              onClose={() => setThresholdModalVisible(false)}
+              walletId={ewalletID}
+              thresholdvalue={walletData?.dailySpendingLimit || 0}
+              onThresholdSet={handleSetThreshold}
+            />
+          )
+        }
+
+
       </GestureHandlerRootView>
     </SafeAreaView>
   );
@@ -265,6 +287,12 @@ const styles = StyleSheet.create({
       height: 1,
     },
     marginHorizontal: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '50%'
   }
 });
 

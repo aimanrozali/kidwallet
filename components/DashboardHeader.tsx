@@ -80,11 +80,11 @@ const DashboardHeader = () => {
       <View style={styles.container}>
         <View>
           <Text style={{ fontFamily: 'lato-sb', fontSize: 10 }}>Total Spent</Text>
-          <Text style={{ fontFamily: 'lato-bold', fontSize: 20, paddingTop: 5 }}>RM50.30</Text>
+          <Text style={{ fontFamily: 'lato-bold', fontSize: 20, paddingTop: 5 }}>RM21.40</Text>
         </View>
         <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center', alignSelf: 'flex-end' }}>
           <Ionicons name='arrow-up-circle-outline' size={20} color={'green'} />
-          <Text style={{ fontFamily: 'lato-light', fontSize: 11 }}>5.3% from last week</Text>
+          <Text style={{ fontFamily: 'lato-light', fontSize: 11 }}>from last week</Text>
         </View>
       </View>
     </View>
