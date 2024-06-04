@@ -12,7 +12,7 @@ import { FontAwesome, Ionicons } from '@expo/vector-icons'
 import Colors from '@/constants/Colors'
 import { useRouter, useSegments } from 'expo-router'
 
-interface UserData {
+export interface UserData {
   email: string;
   userName: string;
   phoneNumber: string;
@@ -109,17 +109,15 @@ const Dashboard = () => {
           </View>
         </View>
         <View style={styles.container}>
-          <View>
-            <Text style={{ fontFamily: 'lato-sb', fontSize: 10 }}>Total Spent</Text>
-            <Text style={{ fontFamily: 'lato-bold', fontSize: 20, paddingTop: 5 }}>RM21.45</Text>
-          </View>
           <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center', alignSelf: 'flex-end' }}>
             {/* <Ionicons name='arrow-up-circle-outline' size={20} color={'green'} />
             <Text style={{ fontFamily: 'lato-light', fontSize: 11 }}>5.3% from last week</Text> */}
           </View>
         </View>
       </View>
-      <DashboardGraph />
+      {authState?.authenticated &&
+        <DashboardGraph refresh={refresh} />
+      }
       <View style={{ flex: 1 }}>
         <View style={styles.headerShadow}>
           <Text

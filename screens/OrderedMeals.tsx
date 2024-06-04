@@ -32,7 +32,7 @@ const OrderedMeals = () => {
   const ShimmerPlaceholder = createShimmerPlaceholder(LinearGradient);
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
-  const [filterByDate, setFilterByDate] = useState(true);
+  const [filterByDate, setFilterByDate] = useState(false);
 
   const { id } = useLocalSearchParams<{ id: string }>();
 
@@ -61,24 +61,66 @@ const OrderedMeals = () => {
     }
   };
 
+  const checkEligibility = async (orderID: number) => {
+    try {
+      const response = await axios.post(`${API_URL}/api/Order/CheckRefundEligibility?id=${orderID}`);
+
+      if (response.data.success === true) {
+        if (response.data.data === true) {
+          return true;
+        }
+        else {
+          return false;
+        }
+      }
+    }
+    catch (error) {
+      console.error("At CheckEligibility", error);
+    }
+    return false;
+  }
+
   const handleOptionSelect = async (orderID: number) => {
+
+    let eligible = await checkEligibility(orderID);
     console.log("Selected option:", orderID);
-    Alert.alert(
-      "Cancel Order",
-      "Are you sure you want to cancel this order?",
-      [
-        {
-          text: "No",
-          style: "cancel",
-        },
-        {
-          text: "Yes",
-          onPress: () => {
-            confirmCancelOrder(orderID);
+    if (eligible) {
+      Alert.alert(
+        "Cancel Order",
+        "Are you sure you want to cancel this order? You order will be refunded.",
+        [
+          {
+            text: "No",
+            style: "cancel",
           },
-        },
-      ]
-    );
+          {
+            text: "Yes",
+            onPress: () => {
+              confirmCancelOrder(orderID);
+            },
+          },
+        ]
+      );
+    }
+    else {
+      Alert.alert(
+        "Cancel Order",
+        "Are you sure you want to cancel this order? You order will not be refunded.",
+        [
+          {
+            text: "No",
+            style: "cancel",
+          },
+          {
+            text: "Yes",
+            onPress: () => {
+              confirmCancelOrder(orderID);
+            },
+          },
+        ]
+      );
+    }
+
   };
 
   useEffect(() => {

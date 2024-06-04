@@ -1,12 +1,12 @@
-import { View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Keyboard, TextInput, Alert } from 'react-native'
-import React, { useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { useRouter } from 'expo-router'
-import { Ionicons } from '@expo/vector-icons'
-import { defaultStyles } from '@/constants/Styles'
-import { useAuth } from '@/context/AuthContext'
-import * as yup from 'yup'
-import { Formik } from 'formik'
+import { View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Keyboard, TextInput, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { defaultStyles } from '@/constants/Styles';
+import { useAuth } from '@/context/AuthContext';
+import * as yup from 'yup';
+import { Formik } from 'formik';
 
 const signUp = () => {
   const loginValidationSchema = yup.object().shape({
@@ -16,7 +16,7 @@ const signUp = () => {
       .required('Email Address is Required'),
     password: yup
       .string()
-      .min(8, ({ min }) => `Password must be at least ${min} characters`)
+      .matches(/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, "Password must be at least 8 characters, contain a number, an uppercase letter, and a symbol.")
       .required('Password is required'),
     confirmPass: yup
       .string()
@@ -29,18 +29,27 @@ const signUp = () => {
 
   const router = useRouter();
   const { onRegister } = useAuth();
+  const [passwordVisibility, setPasswordVisibility] = useState(true);
+  const [confirmPasswordVisibility, setConfirmPasswordVisibility] = useState(true);
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisibility(!passwordVisibility);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setConfirmPasswordVisibility(!confirmPasswordVisibility);
+  };
 
   const register = async (values: any) => {
-    // try {
-    await loginValidationSchema.validate(values);
-    const result = await onRegister!(values.email, values.password, values.userName);
-    // console.log(result);
-    // alert("Registration Successful");
-    // router.push("/Login");
-    // } catch (e) {
-    //   console.error("Error on SignUp.tsx", e);
-    // }
-  }
+    try {
+      await loginValidationSchema.validate(values);
+      const result = await onRegister!(values.email, values.password, values.userName);
+      Alert.alert("Registration Successful");
+      router.push("/Login");
+    } catch (e) {
+      console.error("Error on SignUp.tsx", e);
+    }
+  };
 
   return (
     <SafeAreaView>
@@ -73,9 +82,9 @@ const signUp = () => {
                     onBlur={handleBlur('email')}
                     value={values.email}
                   />
-                  {/* {errors.email && touched.email && ( */}
-                  <Text style={styles.errorText}>{errors.email}</Text>
-                  {/* )} */}
+                  {errors.email && touched.email && (
+                    <Text style={styles.errorText}>{errors.email}</Text>
+                  )}
 
                   <Text style={{ paddingBottom: 10, marginLeft: 15 }}>User Name</Text>
                   <TextInput
@@ -85,33 +94,45 @@ const signUp = () => {
                     onBlur={handleBlur('userName')}
                     value={values.userName}
                   />
-                  {/* {errors.userName && touched.userName && ( */}
-                  <Text style={styles.errorText}>{errors.userName}</Text>
-                  {/* )} */}
+                  {errors.userName && touched.userName && (
+                    <Text style={styles.errorText}>{errors.userName}</Text>
+                  )}
 
                   <Text style={{ paddingBottom: 10, marginLeft: 15 }}>Password</Text>
-                  <TextInput
-                    placeholder='Enter your password' secureTextEntry={true}
-                    style={[defaultStyles.inputField, { marginBottom: 5, marginHorizontal: 20 }]}
-                    onChangeText={handleChange('password')}
-                    onBlur={handleBlur('password')}
-                    value={values.password}
-                  />
-                  {/* {errors.password && touched.password && ( */}
-                  <Text style={styles.errorText}>{errors.password}</Text>
-                  {/* )} */}
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 20, marginBottom: 5 }}>
+                    <TextInput
+                      placeholder='Enter your password'
+                      secureTextEntry={passwordVisibility}
+                      style={[defaultStyles.inputField, { flex: 1 }]}
+                      onChangeText={handleChange('password')}
+                      onBlur={handleBlur('password')}
+                      value={values.password}
+                    />
+                    <TouchableOpacity onPress={togglePasswordVisibility}>
+                      <Ionicons name={passwordVisibility ? 'eye-off' : 'eye'} size={24} color="gray" />
+                    </TouchableOpacity>
+                  </View>
+                  {errors.password && touched.password && (
+                    <Text style={styles.errorText}>{errors.password}</Text>
+                  )}
 
                   <Text style={{ paddingBottom: 10, marginLeft: 15 }}>Confirm Password</Text>
-                  <TextInput
-                    placeholder='Confirm password' secureTextEntry={true}
-                    style={[defaultStyles.inputField, { marginBottom: 5, marginHorizontal: 20 }]}
-                    onChangeText={handleChange('confirmPass')}
-                    onBlur={handleBlur('confirmPass')}
-                    value={values.confirmPass}
-                  />
-                  {/* {errors.confirmPass && touched.confirmPass && ( */}
-                  <Text style={styles.errorText}>{errors.confirmPass}</Text>
-                  {/* )} */}
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 20, marginBottom: 5 }}>
+                    <TextInput
+                      placeholder='Confirm password'
+                      secureTextEntry={confirmPasswordVisibility}
+                      style={[defaultStyles.inputField, { flex: 1 }]}
+                      onChangeText={handleChange('confirmPass')}
+                      onBlur={handleBlur('confirmPass')}
+                      value={values.confirmPass}
+                    />
+                    <TouchableOpacity onPress={toggleConfirmPasswordVisibility}>
+                      <Ionicons name={confirmPasswordVisibility ? 'eye-off' : 'eye'} size={24} color="gray" />
+                    </TouchableOpacity>
+                  </View>
+                  {errors.confirmPass && touched.confirmPass && (
+                    <Text style={styles.errorText}>{errors.confirmPass}</Text>
+                  )}
 
                   <TouchableOpacity
                     style={[defaultStyles.btn, { marginHorizontal: 40, marginTop: 10 }]}
@@ -155,4 +176,4 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginBottom: 10,
   }
-})
+});

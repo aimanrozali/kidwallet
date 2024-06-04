@@ -9,10 +9,10 @@ interface ScrollableViewProps {
 
 const ScrollableView = ({ children }: ScrollableViewProps) => {
 
-  const { height } = Dimensions.get('window');
+  const { height } = Dimensions.get('screen');
 
   return (
-    <ScrollView scrollEnabled={false} style={{ height: height }}>
+    <ScrollView scrollEnabled={true} style={{ height: height, flex: 1 }}>
       {children}
     </ScrollView>
   )

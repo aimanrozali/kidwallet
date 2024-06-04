@@ -76,6 +76,16 @@ export const selectQuantityById = (mealID: number, studentID: string) => createS
   }
 );
 
+export const selectTotalItems = (studentID: string) => createSelector(
+  (state: RootState) => state.cart[studentID],
+  (cart: CartItem[] | undefined) => {
+    if (!cart) {
+      return 0;
+    }
+    return cart.reduce((total, item) => total + item.quantity, 0);
+  }
+);
+
 export const selectTotalPrice = (studentID: string) => createSelector(
   (state: RootState) => state.cart[studentID],
   (cart: CartItem[] | undefined) => {

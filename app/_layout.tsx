@@ -145,6 +145,7 @@ function RootLayoutNav() {
       <Stack.Screen name='(auth)/profile/changePassword' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
       <Stack.Screen name='(auth)/profile/editChildren' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
       <Stack.Screen name='(auth)/profile/addChildren' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
+      <Stack.Screen name='(auth)/profile/ChangeProfilePicture' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
     </Stack>
   );
 }

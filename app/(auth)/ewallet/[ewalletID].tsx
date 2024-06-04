@@ -99,7 +99,7 @@ const WalletPage = () => {
   var today = todayDate.toLocaleDateString("en-MY", { month: 'long', year: 'numeric', day: 'numeric' });
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} >
       <GestureHandlerRootView style={styles.gestureHandlerRootView}>
         <View style={styles.innerContainer}>
           {/* Screen header */}
@@ -155,7 +155,11 @@ const WalletPage = () => {
             <View>
               <Text style={{ fontFamily: 'lato-bold', fontSize: 15 }}>Current Daily Spending Threshold</Text>
               <Text style={{ fontFamily: 'lato-black', fontSize: 18, paddingVertical: 5 }}>RM{walletData?.dailySpendingLimit.toFixed(2)}</Text>
-              <Text style={{ fontFamily: 'lato-sb', fontSize: 13, color: Colors.grey }}>RM4.00 Spent Today</Text>
+              <View style={{ flexDirection: 'row', gap: 10 }}>
+                <Text style={{ fontFamily: 'lato-sb', fontSize: 13, color: Colors.grey }}>RM{walletData?.totalSpentToday.toFixed(2)} Spent Today</Text>
+                <Text style={{ fontFamily: 'lato-sb', fontSize: 13, color: Colors.grey }}>|</Text>
+                <Text style={{ fontFamily: 'lato-sb', fontSize: 13, color: walletData?.reachLimit ? 'red' : 'green' }}>{walletData?.reachLimit ? "Limit reached" : "RM" + (walletData?.dailySpendingLimit ?? 0 - (walletData?.totalSpentToday ?? 0)).toFixed(2) + " before limit"}</Text>
+              </View>
             </View>
           </View>
 
@@ -198,7 +202,7 @@ const WalletPage = () => {
 
 
       </GestureHandlerRootView>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 };
 

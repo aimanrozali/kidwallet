@@ -1,13 +1,17 @@
-import { View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard, TextInput, Alert } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { API_URL } from '@/config';
-import axios from 'axios';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard, TextInput, Pressable, Alert, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'expo-router';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { defaultStyles } from '@/constants/Styles';
-import SectionedMultiSelect from 'react-native-sectioned-multi-select';
-import DropDownPicker from 'react-native-dropdown-picker';
 import { ActivityIndicator, Modal, RadioButton } from 'react-native-paper';
+import SectionedMultiSelect from 'react-native-sectioned-multi-select';
+import DatePicker from 'react-native-date-picker';
+import axios from 'axios';
+import { API_URL } from '@/config';
+import moment from 'moment';
+import Colors from '@/constants/Colors';
+import { useLocalSearchParams } from 'expo-router';
+import { Picker } from '@react-native-picker/picker';
 
 const allergics = [
   { name: "Tree Nuts", value: "Tree Nuts" },
@@ -19,17 +23,21 @@ const allergics = [
   { name: "Seafood", value: "Seafood" },
 ];
 
-const genders = [
-  { name: "Male", value: "Male" },
-  { name: "Female", value: "Female" }
-];
-
 const EditChildren = () => {
-
   const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [studentID, setStudentID] = useState(parseInt(id));
+  const [studentName, setStudentName] = useState("");
+  const [grade, setGrade] = useState("");
+  const [className, setClassName] = useState("");
+  const [gender, setGender] = useState('');
+  const [date, setDate] = useState(new Date());
+  const [allergy, setAllergens] = useState([]);
 
   useEffect(() => {
-
     const url = `${API_URL}/api/Student/${id}`;
 
     const fetchData = async () => {
@@ -40,72 +48,48 @@ const EditChildren = () => {
         setGrade(responseJson.grade);
         setClassName(responseJson.className);
         setGender(responseJson.gender);
-        setBirthDate(responseJson.birthDate);
+        setDate(new Date(responseJson.birthDate));
         setAllergens(responseJson.allergy);
-        //setLoading(false);
-        console.log("Header")
-
       } catch (err) {
         console.error(err);
       }
     }
 
     fetchData();
-
-  }, []);
-
-
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [studentID, setStudentID] = useState(parseInt(id));
-  const [studentName, setStudentName] = useState("");
-  const [grade, setGrade] = useState("");
-  const [className, setClassName] = useState("");
-  const [gender, setGender] = useState('');
-  const [birthDate, setBirthDate] = useState(Date);
-  const [allergy, setAllergens] = useState([]);
-  const [genderItems, setGenderItems] = useState([
-    { name: "Male", value: "m" },
-    { name: "Female", value: "f" }
-  ]);
+  }, [id]);
 
   const update = async () => {
-    console.log(allergy);
-    await axios.put(`${API_URL}/api/Student`, { studentID, studentName, grade, className, gender, birthDate, allergy }, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }).then((res) => {
-      console.log(res.data.data);
-      alert("Data successfully updated!");
-    })
-      .catch((err) => {
-        console.error(err);
+    setLoading(true);
+    try {
+      await axios.put(`${API_URL}/api/Student`, {
+        studentID, studentName, grade, className, gender, birthDate: modifyDate(), allergy
+      }, {
+        headers: { 'Content-Type': 'application/json' }
       });
+      setLoading(false);
+      Alert.alert('Success', 'Data successfully updated!');
+    } catch (err) {
+      setLoading(false);
+      console.error(err);
+      Alert.alert('Error', 'Failed to update data');
+    }
   }
 
   const deletePrompt = () => {
-    Alert.alert("Delete", "Are you sure you want to delete this child?",
-      [{ text: 'Cancel', onPress: () => console.log('Cancel Pressed') }, { text: 'Delete', style: 'destructive', onPress: () => handleDelete() }]
-    );
+    Alert.alert("Delete", "Are you sure you want to delete this child?", [
+      { text: 'Cancel', onPress: () => console.log('Cancel Pressed') },
+      { text: 'Delete', style: 'destructive', onPress: () => handleDelete() }
+    ]);
   }
 
   const deleteChild = async () => {
     let resp = false;
-    await axios.delete(`${API_URL}/api/Student/${id}`)
-      .then((response) => {
-        resp = true;
-        console.log(response.data);
-      })
-      .catch((error) => {
-        if (axios.isAxiosError(error)) {
-          console.error('Error status:', error.response?.status);
-          console.error('Error message:', error.response?.data);
-        } else {
-          console.error('Unexpected error:', error);
-        }
-      });
+    try {
+      await axios.delete(`${API_URL}/api/Student/${id}`);
+      resp = true;
+    } catch (error) {
+      console.error('Unexpected error:', error);
+    }
     return resp;
   };
 
@@ -121,86 +105,113 @@ const EditChildren = () => {
     }
   }
 
-
+  const modifyDate = () => {
+    let parsedDate = moment(date, 'M/D/YYYY');
+    return parsedDate.format('YYYY-MM-DD');
+  }
 
   return (
-    <View>
-      <View style={{ paddingHorizontal: 10 }}>
-        {/* header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} >
-            <Ionicons name='chevron-back' size={30} />
-          </TouchableOpacity>
-          <View>
-            <Text style={styles.headerText}>Edit Profile</Text>
-          </View>
-        </View>
-
+    <View style={{ flex: 1 }}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} >
+          <Ionicons name='chevron-back' size={30} />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>Edit Profile</Text>
+      </View>
+      <ScrollView style={{ flex: 1, paddingHorizontal: 10 }}
+        contentContainerStyle={{ paddingBottom: 10 }}
+      >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={{ paddingTop: 40 }}>
-            <Text style={{ paddingBottom: 10, marginLeft: 15 }}>Name</Text>
+          <View style={styles.formStyle}>
+            <Text style={styles.formText}>Name</Text>
             <TextInput
-              style={[defaultStyles.inputField, { marginBottom: 20, marginHorizontal: 20 }]}
+              style={[defaultStyles.inputField, styles.inputFieldCont]}
               value={studentName}
               onChangeText={setStudentName}
             />
 
-            <Text style={{ paddingBottom: 10, marginLeft: 15 }}>Grade</Text>
-            <TextInput
-              style={[defaultStyles.inputField, { marginBottom: 20, marginHorizontal: 20 }]}
-              value={grade}
-              onChangeText={setGrade}
+            <Text style={styles.formText}>Grade</Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                style={defaultStyles.inputField}
+                selectedValue={grade}
+                onValueChange={(itemValue, itemIndex) =>
+                  setGrade(itemValue)
+                }>
+                <Picker.Item label="Grade 1" value="1" />
+                <Picker.Item label="Grade 2" value="2" />
+                <Picker.Item label="Grade 3" value="3" />
+                <Picker.Item label="Grade 4" value="4" />
+                <Picker.Item label="Grade 5" value="5" />
+                <Picker.Item label="Grade 6" value="6" />
+              </Picker>
+            </View>
+
+            <Text style={styles.formText}>Class Name</Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                style={defaultStyles.inputField}
+                selectedValue={className}
+                onValueChange={(itemValue, itemIndex) =>
+                  setClassName(itemValue)
+                }>
+                <Picker.Item label="A" value="a" />
+                <Picker.Item label="B" value="b" />
+                <Picker.Item label="C" value="c" />
+                <Picker.Item label="D" value="d" />
+              </Picker>
+            </View>
+
+            <Text style={styles.formText}>Birth Date</Text>
+            <Pressable onPress={() => setOpen(true)}>
+              <View pointerEvents='none'>
+                <TextInput
+                  style={[defaultStyles.inputField, styles.inputFieldCont]}
+                  value={date.toLocaleDateString()}
+                />
+              </View>
+            </Pressable>
+            <DatePicker
+              modal
+              mode='date'
+              locale='en-MY'
+              open={open}
+              date={date}
+              maximumDate={new Date()}
+              onConfirm={(date) => {
+                setDate(date);
+                setOpen(false);
+              }}
+              onCancel={() => {
+                setOpen(false);
+              }}
             />
 
-            <Text style={{ paddingBottom: 10, marginLeft: 15 }}>Class Name</Text>
-            <TextInput
-              keyboardType='phone-pad'
-              style={[defaultStyles.inputField, { marginBottom: 20, marginHorizontal: 20 }]}
-              value={className}
-              onChangeText={setClassName}
-            />
-
-            <Text style={{ paddingBottom: 10, marginLeft: 15 }}>Birth Date</Text>
-            <TextInput
-              style={[defaultStyles.inputField, { marginBottom: 20, marginHorizontal: 20 }]}
-              value={birthDate}
-              onChangeText={setBirthDate}
-            />
-
-            <Text style={{ paddingBottom: 10, marginLeft: 15 }}>Gender</Text>
-            <View style={{ flexDirection: 'row' }}>
+            <Text style={styles.formText}>Gender</Text>
+            <View style={{ flexDirection: 'row', paddingBottom: 10 }}>
               <RadioButton.Android
                 value='Male'
                 status={gender === 'm' ? 'checked' : 'unchecked'}
                 onPress={() => setGender('m')}
-                color="#007BFF"
+                color={Colors.primary}
               />
-              <Text style={{ textAlignVertical: 'center' }}>Male</Text>
+              <Text style={{ textAlignVertical: 'center', marginRight: 20 }}>Male</Text>
 
               <RadioButton.Android
                 value='Female'
                 status={gender === 'f' ? 'checked' : 'unchecked'}
                 onPress={() => setGender('f')}
-                color="#007BFF"
+                color={Colors.primary}
               />
               <Text style={{ textAlignVertical: 'center' }}>Female</Text>
-
             </View>
-            {/* <TextInput
-              style={[defaultStyles.inputField, { marginBottom: 20, marginHorizontal: 20 }]}
-              value={gender}
-              onChangeText={setGender}
-            /> */}
 
-            <Text style={{ paddingBottom: 10, marginLeft: 15, paddingTop: 10 }}>Allergics</Text>
-            {/* <View style={[defaultStyles.inputField, { marginBottom: 20, marginHorizontal: 20 }]}>
-              <Text>{allergy.join(', ')}</Text>
-            </View> */}
+            <Text style={styles.formText}>Allergics</Text>
             <SectionedMultiSelect
-              IconRenderer={MaterialIcons} // Provide the correct type for IconRenderer prop
+              IconRenderer={MaterialIcons}
               items={allergics}
               uniqueKey="value"
-              onSelectedItemsChange={(items: any[]) => setAllergens(items as never[])} // Update the type of setAllergens to accept an array of any type
+              onSelectedItemsChange={(items) => setAllergens(items)}
               selectedItems={allergy}
               styles={{
                 container: styles.multiSelectContainer,
@@ -208,11 +219,6 @@ const EditChildren = () => {
                 selectToggle: styles.multiSelectBox,
               }}
             />
-            {/* <TextInput
-              style={[defaultStyles.inputField, { marginBottom: 20, marginHorizontal: 20 }]}
-              value={allergens}
-              onChangeText={setAllergens}
-            /> */}
 
             <TouchableOpacity
               style={[defaultStyles.btn, { marginHorizontal: 40, marginTop: 10 }]}
@@ -221,44 +227,48 @@ const EditChildren = () => {
               <Text style={defaultStyles.btnText}>Update</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[defaultStyles.btnDel, { marginHorizontal: 40, marginTop: 10 }]}
+              style={[defaultStyles.btn, styles.deleteButton]}
               onPress={deletePrompt}
             >
               <Text style={defaultStyles.btnText}>Delete</Text>
             </TouchableOpacity>
           </View>
         </TouchableWithoutFeedback>
+      </ScrollView>
 
-      </View>
-      <Modal visible={loading} dismissable={false} contentContainerStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-
-        <ActivityIndicator animating={loading} color="#E2EF09" size="large" style={{ position: 'absolute', top: '45%', left: '45%', zIndex: 1 }} />
-
+      <Modal visible={loading} dismissable={false} contentContainerStyle={styles.loadingModal}>
+        <ActivityIndicator animating={loading} color={Colors.primary} size="large" />
       </Modal>
     </View>
-  )
+  );
 }
 
-export default EditChildren
+export default EditChildren;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff'
-  },
   header: {
     flexDirection: 'row',
     paddingTop: 15,
     paddingLeft: 10,
-    paddingRight: 10,
-    paddingBottom: 10,
     alignItems: 'center',
-    gap: 10
+    gap: 10,
   },
   headerText: {
     fontFamily: 'lato-bold',
-    fontSize: 15,
-    paddingBottom: 2,
+    fontSize: 18,
+    color: 'black',
+  },
+  formStyle: {
+    paddingTop: 20,
+    marginHorizontal: 20,
+  },
+  inputFieldCont: {
+    marginBottom: 20,
+  },
+  formText: {
+    paddingBottom: 10,
+    fontFamily: 'lato-bold',
+    color: 'black',
   },
   multiSelectBackdrop: {
     backgroundColor: 'grey',
@@ -268,9 +278,27 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderColor: '#bbb',
     padding: 12,
-    marginBottom: 12
+    marginBottom: 12,
   },
   multiSelectContainer: {
-    paddingBottom: 10, marginLeft: 15
-  }
-})
+    paddingBottom: 10,
+    marginLeft: 15,
+  },
+  pickerContainer: {
+    marginBottom: 20,
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: '#bbb',
+  },
+  deleteButton: {
+    backgroundColor: Colors.red,
+    marginHorizontal: 40,
+    marginTop: 10,
+  },
+  loadingModal: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

@@ -12,6 +12,8 @@ import { setDates } from '@/hooks/DateReducer';
 import { setName } from '@/hooks/NameReducer';
 import { RootState } from '@/store/store';
 import { BlurView } from '@react-native-community/blur';
+import IconWithBadge from '@/components/IconWithBadge';
+import { selectTotalItems } from '@/hooks/CardReducer';
 
 interface Props {
   name: string,
@@ -30,6 +32,8 @@ const MealsList = ({ name, id }: Props) => {
   const [loadedMeal, setLoadedMeal] = useState(false);
   const [loadedDrink, setLoadedDrink] = useState(false);
   const [orderDate, setOrderDate] = useState<OrderDateData[]>();
+
+  const totalItems = useAppSelector((state: RootState) => selectTotalItems(id)(state.cart));
 
   //console.log("At MealList::", name);
 
@@ -270,7 +274,7 @@ const MealsList = ({ name, id }: Props) => {
           //disabled={cartEmpty}
           style={styles.btnEnabled}
           onPress={() => router.push(`/(auth)/orderMeals/viewCart?id=${id}`)}>
-          <FontAwesome5 name="shopping-basket" size={24} color='black' />
+          <IconWithBadge name="shopping-basket" size={24} color='black' badgeCount={totalItems} />
           <Text style={{ fontFamily: 'lato-bold', fontSize: 13, padding: 10 }}>View Cart</Text>
         </TouchableOpacity>
       </View>

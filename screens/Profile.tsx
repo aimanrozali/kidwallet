@@ -1,12 +1,12 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { Ionicons } from '@expo/vector-icons'
-import { useRouter } from 'expo-router';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter, useSegments } from 'expo-router';
 import { API_URL } from '@/config';
 import axios from 'axios';
 import { Student } from '@/interfaces/student';
-import { defaultStyles } from '@/constants/Styles';
 import { useAuth } from '@/context/AuthContext';
+import Colors from '@/constants/Colors';
 
 interface UserData {
   email: string;
@@ -14,12 +14,12 @@ interface UserData {
   phoneNumber: string;
   profilePicture: string;
   students: Student[];
-
 }
 
 const Profile = () => {
-
   const [profile, setProfile] = useState<UserData | null>(null);
+
+  const segments = useSegments();
 
   useEffect(() => {
     const url = `${API_URL}/api/User/GetInfo`;
@@ -29,139 +29,178 @@ const Profile = () => {
         const response = await axios.get(url);
         const responseJson = response.data.data;
         setProfile(responseJson);
-
-        console.log(responseJson); // Log the updated value here
-        //setLoaded(true);
-
       } catch (err) {
         console.error("At MealsPreOrder", err);
       }
-    }
+    };
 
     fetchData();
+  }, [segments]);
 
-  }, []);
-
-  const { onLogout, authState } = useAuth();
+  const { onLogout } = useAuth();
 
   const logout = async () => {
-    await onLogout;
-    console.log("LOGOUT::", authState)
-  }
+    if (onLogout) {
+      await onLogout();
+    }
+  };
 
   const router = useRouter();
+
   return (
-    <View>
+    <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerText}>My Profile</Text>
       </View>
 
       {/* Account Details */}
-      <View style={[styles.card, { padding: 10 }]}>
-        <View style={{ alignItems: 'center', paddingTop: 10, gap: 10 }}>
-          <Image style={styles.image} source={{ uri: profile?.profilePicture ? profile?.profilePicture : "https://avatar.iran.liara.run/public" }} />
-          <Text style={styles.profileText}>{profile?.userName}</Text>
-          <Text style={styles.profileText}>{profile?.email}</Text>
-          <Text style={styles.profileText}>{profile?.phoneNumber}</Text>
-        </View>
+      <View style={styles.profileCard}>
+        <Image
+          style={styles.image}
+          source={{ uri: profile?.profilePicture || 'https://kidwallet-bucket.s3.ap-southeast-1.amazonaws.com/profilePictures/default.jpg' }}
+        />
+        <Text style={styles.profileName}>{profile?.userName}</Text>
+        <Text style={styles.profileEmail}>{profile?.email}</Text>
+        <Text style={styles.profilePhone}>{profile?.phoneNumber}</Text>
       </View>
 
       {/* Content */}
-      <View>
-        <ScrollView style={styles.card}>
-          <TouchableOpacity
-            onPress={() => router.navigate(`(auth)/profile/editProfile`)}
-          >
-            <View style={styles.cardInnerContainer}>
-              <Text style={{ fontFamily: 'lato-bold', fontSize: 13 }}>Edit Profile</Text>
+      <View style={styles.contentContainer}>
+        <ScrollView contentContainerStyle={styles.optionsCard}>
+          <TouchableOpacity onPress={() => router.navigate(`(auth)/profile/editProfile`)}>
+            <View style={styles.option}>
+              <Text style={styles.optionText}>Edit Profile</Text>
               <Ionicons name='chevron-forward' size={20} />
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => router.navigate(`(auth)/profile/manageChildren`)}
-          >
-            <View style={styles.cardInnerContainer}>
-              <Text style={{ fontFamily: 'lato-bold', fontSize: 13 }}>Manage Children</Text>
+          <TouchableOpacity onPress={() => router.navigate(`(auth)/profile/ChangeProfilePicture`)}>
+            <View style={styles.option}>
+              <Text style={styles.optionText}>Change Profile Picture</Text>
               <Ionicons name='chevron-forward' size={20} />
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity >
-            <View style={styles.cardInnerContainer}>
-              <Text style={{ fontFamily: 'lato-bold', fontSize: 13 }}>Change Password</Text>
+          <TouchableOpacity onPress={() => router.navigate(`(auth)/profile/manageChildren`)}>
+            <View style={styles.option}>
+              <Text style={styles.optionText}>Manage Children</Text>
+              <Ionicons name='chevron-forward' size={20} />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => router.navigate(`(auth)/profile/changePassword`)}>
+            <View style={styles.option}>
+              <Text style={styles.optionText}>Change Password</Text>
               <Ionicons name='chevron-forward' size={20} />
             </View>
           </TouchableOpacity>
         </ScrollView>
 
-        <TouchableOpacity
-          style={[styles.btn, { marginHorizontal: 40, marginTop: 10 }]}
-          onPress={onLogout}>
-          <Text>Logout</Text>
+        <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+          <Text style={styles.logoutButtonText}>Logout</Text>
         </TouchableOpacity>
-
       </View>
-
     </View>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f9f9f9',
+  },
   header: {
-    flexDirection: 'row',
-    paddingTop: 15,
-    paddingLeft: 10,
-    alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
-    paddingBottom: 20
+    alignItems: 'center',
+    paddingVertical: 20,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
   },
   headerText: {
     fontFamily: 'lato-bold',
-    fontSize: 15
+    fontSize: 18,
+    color: '#333',
   },
-  card: {
+  profileCard: {
     backgroundColor: '#fff',
     borderRadius: 14,
-    margin: 10,
+    marginHorizontal: 20,
+    marginTop: 20,
+    padding: 20,
+    alignItems: 'center',
     elevation: 4,
     shadowColor: '#000',
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    shadowOffset: {
-      width: 2,
-      height: 2,
-    },
-    gap: 20,
-  },
-  cardInnerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 10,
-    paddingVertical: 15,
-    alignItems: 'center',
+    shadowOffset: { width: 2, height: 2 },
   },
   image: {
     height: 80,
     width: 80,
-    borderRadius: 0,
-    alignContent: 'center'
+    borderRadius: 40,
+    marginBottom: 10,
   },
-  profileText: {
+  profileName: {
     fontFamily: 'lato-bold',
-    fontSize: 15
+    fontSize: 18,
+    color: '#333',
   },
-  btn: {
-    backgroundColor: '#ff1100',
+  profileEmail: {
+    fontFamily: 'lato-regular',
+    fontSize: 14,
+    color: '#666',
+  },
+  profilePhone: {
+    fontFamily: 'lato-regular',
+    fontSize: 14,
+    color: '#666',
+  },
+  contentContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+    marginTop: 20,
+    paddingBottom: 20
+  },
+  optionsCard: {
+    backgroundColor: '#fff',
+    borderRadius: 14,
+    paddingVertical: 10,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    shadowOffset: { width: 2, height: 2 },
+  },
+  option: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  optionText: {
+    fontFamily: 'lato-bold',
+    fontSize: 15,
+    color: '#333',
+  },
+  logoutButton: {
+    backgroundColor: Colors.red,
     height: 50,
-    width: '30%',
-    borderRadius: 8,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: 'center'
+    marginHorizontal: 50,
+    marginTop: 20,
   },
-})
+  logoutButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+});

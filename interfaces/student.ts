@@ -17,6 +17,8 @@ export interface Wallet {
   dailySpendingLimit: number;
   student: Student;
   transactions: Transaction[];
+  totalSpentToday: number;
+  reachLimit: boolean;
 }
 
 export interface Transaction {

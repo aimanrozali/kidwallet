@@ -27,7 +27,7 @@ const SetThresholdModal = ({ isVisible, onClose, walletId, onThresholdSet, thres
 
     setLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/api/Wallet/SetThreshold`, {
+      const response = await axios.put(`${API_URL}/api/Wallet/SetThreshold`, {
         walletId,
         threshold: value,
       });

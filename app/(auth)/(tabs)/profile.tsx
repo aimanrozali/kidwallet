@@ -14,7 +14,7 @@ const profile = () => {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <Profile />
       {/*
       <View>
