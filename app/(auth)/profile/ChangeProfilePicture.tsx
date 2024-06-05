@@ -63,11 +63,8 @@ const ChangeProfilePicture = () => {
     const type = match ? `image/${match[1]}` : `image`;
 
     const formData = new FormData();
-    formData.append('file', {
-      uri: localUri,
-      name: filename,
-      type: type,
-    });
+    const blob = new Blob([localUri], { type });
+    formData.append('file', blob, filename);
 
     setLoading(true);
 

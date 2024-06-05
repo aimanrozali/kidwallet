@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter, useSegments } from 'expo-router';
@@ -44,11 +44,14 @@ const WalletPage = () => {
     completed ? (
       bottomSheetRef.current?.close()
     ) : null;
-  }, [completed])
+  }, [completed]);
 
-  const handleSheetChanges = (index: number) => {
+  const handleSheetChanges = async (index: number) => {
     console.log('handleSheetChanges', index);
-    if (index === -1) {
+    if (index === 0) {
+      // Bottom sheet is open
+      await startNfcScan();
+    } else if (index === -1) {
       // Bottom sheet is closed
       console.log('Bottom sheet is closed');
       setScanning('scanning');
@@ -82,9 +85,12 @@ const WalletPage = () => {
     fetchData();
   }, [segments]);
 
-  const scanNfc = async () => {
+  const startNfcScan = async () => {
     setSwitcher(!switcher);
     setNfcInitiated(true);
+  };
+
+  const scanNfc = async () => {
     openBottomSheet();
   };
 

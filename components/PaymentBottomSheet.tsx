@@ -1,11 +1,10 @@
-// BottomSheetContent.js
 import { API_URL } from '@/config';
 import { decodeCard } from '@/utils/BytesConvert';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import axios from 'axios';
 import LottieView from 'lottie-react-native';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, Button } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import nfcManager, { NfcTech } from 'react-native-nfc-manager';
 
 interface Props {
@@ -36,20 +35,26 @@ const NFCBottomSheet = ({ errorState, eWalletID, scanState, switchers, complete 
   });
 
   useEffect(() => {
-    nfcManager.start();
-    console.log("NFC STARTED");
-  }, [switchers.switcher])
+    const initNfc = async () => {
+      try {
+        await nfcManager.start();
+        console.log("NFC STARTED");
+      } catch (err) {
+        console.error("NFC START ERROR:", err);
+        Alert.alert("Error", "Failed to initialize NFC. Please ensure NFC is enabled on your device.");
+      }
+    };
 
-
-
+    initNfc();
+  }, [switchers.switcher]);
 
   useEffect(() => {
-    const scanNfc = async () => {
+    const scanNfc = async (retryCount = 0) => {
       try {
-        await nfcManager.requestTechnology(NfcTech.Ndef);
+        await nfcManager.requestTechnology(NfcTech.NfcA);  // Use NfcA for ISO14443A / ISO19536
 
         const tag = await nfcManager.getTag();
-        var result = "";
+        let result = "";
         if (tag?.id) {
           scanState.setScanning('loading');
           result = decodeCard(tag?.id);
@@ -61,45 +66,49 @@ const NFCBottomSheet = ({ errorState, eWalletID, scanState, switchers, complete 
           errorState.setError({ status: false, message: '' });
           setTimeout(() => {
             complete.setCompleted(true);
-          }, 2000)
-
-        }
-        else {
+          }, 2000);
+        } else {
           scanState.setScanning('error');
           setErrorCard({ status: true, message: res.message });
         }
       } catch (err) {
-        //console.warn('NFC ERROR::', JSON.stringify(err));
+        //console.error('NFC ERROR::', JSON.stringify(err));
+        if (retryCount < 3) {
+          console.log(`Retrying NFC scan (${retryCount + 1})...`);
+          setTimeout(() => scanNfc(retryCount + 1), 1000); // Retry after 1 second
+        } else {
+          // scanState.setScanning('error');
+          // setErrorCard({ status: true, message: 'Tag Not Supported by OS' });
+        }
+      } finally {
+        nfcManager.cancelTechnologyRequest();
       }
-    }
+    };
 
-
-
-    const cleanUp = () => {
-      nfcManager.cancelTechnologyRequest();
-    }
     scanNfc();
-    cleanUp();
-
-  }, []);
-
+    return () => {
+      nfcManager.cancelTechnologyRequest();
+    };
+  }, [switchers.switcher]);
 
   const updateData = async (cardNum: string) => {
-    const response = await axios.post(`${API_URL}/api/Wallet/AddCard`,
-      {
+    try {
+      const response = await axios.post(`${API_URL}/api/Wallet/AddCard`, {
         walletID: eWalletID,
         cardID: cardNum
-      }
-    );
+      });
 
-    if (response.data.success) {
-      console.log("Card added successfully");
+      if (response.data.success) {
+        console.log("Card added successfully");
+      } else {
+        console.log("Card not added: ", response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      console.error('Error updating data:', error);
+      return { success: false, message: 'Failed to update data' };
     }
-    else {
-      console.log("Card not added: ", response.data.message);
-    }
-    return response.data;
-  }
+  };
 
   return (
     <BottomSheetView style={styles.container} >
@@ -140,9 +149,6 @@ const NFCBottomSheet = ({ errorState, eWalletID, scanState, switchers, complete 
             <Text style={{ color: 'red' }}>{errorCard.message}</Text>
           </>
         }
-
-
-
       </View>
     </BottomSheetView>
   );
