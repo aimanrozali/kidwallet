@@ -14,13 +14,16 @@ import { useLocalSearchParams } from 'expo-router';
 import { Picker } from '@react-native-picker/picker';
 
 const allergics = [
-  { name: "Tree Nuts", value: "Tree Nuts" },
-  { name: "Dairy", value: "Dairy" },
-  { name: "Eggs", value: "Eggs" },
-  { name: "Wheat", value: "Wheat" },
-  { name: "Soy", value: "Soy" },
-  { name: "Bean", value: "Bean" },
-  { name: "Seafood", value: "Seafood" },
+  { id: 1, name: "Tree Nuts", value: "Tree Nuts" },
+  { id: 2, name: "Dairy", value: "Dairy" },
+  { id: 3, name: "Eggs", value: "Eggs" },
+  { id: 4, name: "Wheat", value: "Wheat" },
+  { id: 5, name: "Soy", value: "Soy" },
+  { id: 6, name: "Beans", value: "Beans" },
+  { id: 7, name: "Seafood", value: "Seafood" },
+  { id: 8, name: "Peanuts", value: "Peanuts" },
+  { id: 9, name: "Sesame", value: "Sesame" },
+  { id: 10, name: "Mustard", value: "Mustard" },
 ];
 
 const EditChildren = () => {

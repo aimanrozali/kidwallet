@@ -20,4 +20,5 @@ export default {
   primary: '#E2EF09',
   grey: '#5E5D5E',
   red: '#C72727',
+  darkGrey: '#999999'
 };

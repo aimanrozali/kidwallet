@@ -59,7 +59,7 @@ const MealsPreOrder = (refresh: Props) => {
 
             {studentData?.map((item, index) => (
               <TouchableOpacity style={[styles.card, {}]}
-                onPress={() => router.navigate('(auth)/orderMeals/orderedList?id=' + item.studentID)}
+                onPress={() => router.navigate('(auth)/(tabs)/orderMeals/orderedList?id=' + item.studentID)}
                 key={index}>
                 <View style={styles.cardInnerContainer}>
                   <Text style={{ fontFamily: 'lato-bold', fontSize: 13 }}>{item.studentName}</Text>

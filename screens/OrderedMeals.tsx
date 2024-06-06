@@ -283,7 +283,7 @@ const OrderedMeals = () => {
           style={[defaultStyles.btn, { paddingHorizontal: 30 }]}
           onPress={() =>
             router.push(
-              `/(auth)/orderMeals/mealsList?id=${student?.studentID}&&name=${student?.studentName}`
+              `/(auth)/(tabs)/orderMeals/mealsList?id=${student?.studentID}&&name=${student?.studentName}`
             )
           }
         >
