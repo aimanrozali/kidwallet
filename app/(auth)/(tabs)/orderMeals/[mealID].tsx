@@ -89,19 +89,19 @@ const MealPage = () => {
                 </View>
                 <View style={styles.nutritionView}>
                   <Text style={styles.nutritionTxt}>Total Protein</Text>
-                  <Text style={styles.nutritionTxt}>{meal.protein}g</Text>
+                  <Text style={styles.nutritionTxt}>{meal.protein}mg</Text>
                 </View>
                 <View style={styles.nutritionView}>
                   <Text style={styles.nutritionTxt}>Total Carbohydrate</Text>
-                  <Text style={styles.nutritionTxt}>{meal.carbohydrate}g</Text>
+                  <Text style={styles.nutritionTxt}>{meal.carbohydrate}kcal</Text>
                 </View>
                 <View style={styles.nutritionView}>
                   <Text style={styles.nutritionTxt}>Total Fat</Text>
-                  <Text style={styles.nutritionTxt}>{meal.fat}g</Text>
+                  <Text style={styles.nutritionTxt}>{meal.fat}mg</Text>
                 </View>
                 <View style={styles.nutritionView}>
                   <Text style={styles.nutritionTxt}>Total Fiber</Text>
-                  <Text style={styles.nutritionTxt}>{meal.fiber}g</Text>
+                  <Text style={styles.nutritionTxt}>{meal.fiber}mg</Text>
                 </View>
               </>
             ) : (

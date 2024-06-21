@@ -254,7 +254,7 @@ const MealsList = ({ name, id }: Props) => {
                       <Text style={styles.mealsNameTxt}>{item.mealName}</Text>
                       <View style={{ flexDirection: 'row', gap: 50 }}>
                         <Text style={styles.priceTxt}>RM{item.price.toFixed(2)}</Text>
-                        <Text style={styles.caloriesTxt}>{item.calories}kcal</Text>
+                        {/* <Text style={styles.caloriesTxt}>{item.calories}kcal</Text> */}
                       </View>
                     </View>
 

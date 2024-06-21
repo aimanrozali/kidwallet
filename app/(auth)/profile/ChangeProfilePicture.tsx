@@ -5,7 +5,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { API_URL } from '@/config';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { UserData } from '@/screens/Dashboard';
 
 const ChangeProfilePicture = () => {
@@ -63,8 +63,7 @@ const ChangeProfilePicture = () => {
     const type = match ? `image/${match[1]}` : `image`;
 
     const formData = new FormData();
-    const blob = new Blob([localUri], { type });
-    formData.append('file', blob, filename);
+    formData.append('file', { uri: localUri, name: filename, type });
 
     setLoading(true);
 
@@ -84,8 +83,27 @@ const ChangeProfilePicture = () => {
       }
     } catch (error) {
       setLoading(false);
-      console.error('Error uploading image:', error);
-      Alert.alert('Error', 'An error occurred while uploading the image.');
+
+      if (error instanceof AxiosError) {
+        // Handle axios-specific errors
+        if (error.response) {
+          // Server responded with a status other than 200 range
+          console.error('Response error:', error.response);
+          Alert.alert('Error', `Failed to upload image: ${error.response.data.message || error.message}`);
+        } else if (error.request) {
+          // Request was made but no response was received
+          console.error('Request error:', error.request);
+          Alert.alert('Error', 'No response received from server.');
+        } else {
+          // Something else happened in setting up the request
+          console.error('Setup error:', error.message);
+          Alert.alert('Error', `Error in setting up request: ${error.message}`);
+        }
+      } else {
+        // Handle non-axios errors
+        console.error('Non-axios error:', error);
+        Alert.alert('Error', 'An unexpected error occurred while uploading the image.');
+      }
     }
   };
 

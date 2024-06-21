@@ -62,7 +62,7 @@ const Profile = () => {
         />
         <Text style={styles.profileName}>{profile?.userName}</Text>
         <Text style={styles.profileEmail}>{profile?.email}</Text>
-        <Text style={styles.profilePhone}>{profile?.phoneNumber}</Text>
+        {/* <Text style={styles.profilePhone}>{profile?.phoneNumber}</Text> */}
       </View>
 
       {/* Content */}

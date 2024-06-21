@@ -35,8 +35,8 @@ const TransactionList = ({ walletTrans, loading }: walletProps) => {
             </View>
             <Text style={{
               fontFamily: 'lato-black', fontSize: 15,
-              color: item.transactionType === 2 ? 'green' : 'red'
-            }}>{item.transactionType === 2 ? '+' : '-'}RM{item.amount.toFixed(2)}</Text>
+              color: item.transactionType === 2 || item.transactionType === 4 ? 'green' : 'red'
+            }}>{item.transactionType === 2 || item.transactionType === 4 ? '+' : '-'}RM{item.amount.toFixed(2)}</Text>
           </View>
         )}
         ListEmptyComponent={

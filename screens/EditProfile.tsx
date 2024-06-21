@@ -35,7 +35,7 @@ const EditProfile = () => {
 
 
   const router = useRouter();
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("0");
   const [email, setEmail] = useState("");
   const [userName, setUserName] = useState("");
 
@@ -90,13 +90,13 @@ const EditProfile = () => {
               onChangeText={setEmail}
             />
 
-            <Text style={{ paddingBottom: 10, marginLeft: 15 }}>Phone Number</Text>
+            {/* <Text style={{ paddingBottom: 10, marginLeft: 15 }}>Phone Number</Text>
             <TextInput
               keyboardType='phone-pad'
               style={[defaultStyles.inputField, { marginBottom: 20, marginHorizontal: 20 }]}
               value={phoneNumber}
               onChangeText={setPhoneNumber}
-            />
+            /> */}
 
             <TouchableOpacity
               style={[defaultStyles.btn, { marginHorizontal: 40, marginTop: 10 }]}

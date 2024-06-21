@@ -44,8 +44,8 @@ const signUp = () => {
     try {
       await loginValidationSchema.validate(values);
       const result = await onRegister!(values.email, values.password, values.userName);
-      Alert.alert("Registration Successful");
-      router.push("/Login");
+      // Alert.alert("Registration Successful");
+      // router.push("/Login");
     } catch (e) {
       console.error("Error on SignUp.tsx", e);
     }
