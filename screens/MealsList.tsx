@@ -147,17 +147,58 @@ const MealsList = ({ name, id }: Props) => {
     <View style={{ paddingHorizontal: 10, flex: 1 }}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} >
-          <Ionicons name='chevron-back' size={30} />
-        </TouchableOpacity>
-        <View>
-          <Text style={styles.headerText}>Order Meals for</Text>
-          <Text style={styles.headerText}>{name}</Text>
+        <View style={{ flexDirection: 'row' }}>
+          <TouchableOpacity onPress={() => router.back()} >
+            <Ionicons name='chevron-back' size={30} />
+          </TouchableOpacity>
+          <View>
+            <Text style={styles.headerText}>Order Meals for</Text>
+            <Text style={styles.headerText}>{name}</Text>
+          </View>
         </View>
+
+        {/* DateContainer */}
+        <View style={styles.dateContainer}>
+          <Text style={{ fontFamily: 'lato-bold', fontSize: 13 }}>
+            Order For
+          </Text>
+          <TouchableOpacity
+            onPress={() => setOpen(true)}
+            style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
+            <MaterialCommunityIcons name="calendar-blank" size={25} />
+            <Text style={{ fontFamily: 'lato-black', fontSize: 18 }}>
+              {date.toLocaleDateString("en-MY", { month: 'numeric', year: 'numeric', day: 'numeric' })}
+            </Text>
+          </TouchableOpacity>
+          <Modal visible={open} transparent animationType="fade" onDismiss={() => setOpen(false)}>
+            <View style={styles.modalContent}>
+              <View style={styles.titleContainer}>
+                <Text style={styles.title}>When you want to order?</Text>
+                <TouchableOpacity onPress={() => setOpen(false)}>
+                  <MaterialIcons name="close" color="#fff" size={22} />
+                </TouchableOpacity>
+              </View>
+              <Calendar
+                minDate={todayDate.toDateString()}
+                markedDates={getMarkedDates}
+                onDayPress={(day) => setDate(new Date(day.dateString))}
+              />
+              <View style={styles.saveContainer}>
+                <TouchableOpacity style={styles.saveButton}
+                  onPress={() => setOpen(false)}>
+                  <Text>Set Date</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+          </Modal>
+
+        </View>
+
       </View>
 
       {/* DateContainer */}
-      <View style={styles.dateContainer}>
+      {/* <View style={styles.dateContainer}>
         <Text style={{ fontFamily: 'lato-bold', fontSize: 13 }}>
           Order For
         </Text>
@@ -192,7 +233,7 @@ const MealsList = ({ name, id }: Props) => {
 
         </Modal>
 
-      </View>
+      </View> */}
 
       {/* Food Card */}
       <View style={{}}>
@@ -213,7 +254,7 @@ const MealsList = ({ name, id }: Props) => {
                       <Text style={styles.mealsNameTxt}>{item.mealName}</Text>
                       <View style={{ flexDirection: 'row', gap: 50 }}>
                         <Text style={styles.priceTxt}>RM{item.price.toFixed(2)}</Text>
-                        <Text style={styles.caloriesTxt}>{item.calories}kcal</Text>
+                        {/* <Text style={styles.caloriesTxt}>{item.calories}kcal</Text> */}
                       </View>
                     </View>
 
@@ -222,7 +263,8 @@ const MealsList = ({ name, id }: Props) => {
                   <View>
                     <TouchableOpacity key={index}>
                       <Ionicons name="add-circle" size={24} color={Colors.primary}
-                        onPress={() => router.push(`/(auth)/orderMeals/${item.mealID}?type=${0}&id=${id}`)} />
+                        // onPress={() => router.push(`/(auth)/orderMeals/${item.mealID}?type=${0}&id=${id}`)} />
+                        onPress={() => router.push(`/(auth)/(tabs)/orderMeals/${item.mealID}?type=${0}&id=${id}`)} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -256,7 +298,7 @@ const MealsList = ({ name, id }: Props) => {
                   <View>
                     <TouchableOpacity key={index}>
                       <Ionicons name="add-circle" size={24} color={Colors.primary}
-                        onPress={() => router.push(`/(auth)/orderMeals/${item.mealID}?id=${id}`)} />
+                        onPress={() => router.push(`/(auth)/(tabs)/orderMeals/${item.mealID}?id=${id}`)} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -273,7 +315,7 @@ const MealsList = ({ name, id }: Props) => {
         <TouchableOpacity
           //disabled={cartEmpty}
           style={styles.btnEnabled}
-          onPress={() => router.push(`/(auth)/orderMeals/viewCart?id=${id}`)}>
+          onPress={() => router.push(`/(auth)/(tabs)/orderMeals/viewCart?id=${id}`)}>
           <IconWithBadge name="shopping-basket" size={24} color='black' badgeCount={totalItems} />
           <Text style={{ fontFamily: 'lato-bold', fontSize: 13, padding: 10 }}>View Cart</Text>
         </TouchableOpacity>
@@ -300,7 +342,8 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     alignItems: 'center',
-    gap: 10
+    gap: 10,
+    justifyContent: 'space-between'
   },
   headerText: {
     fontFamily: 'lato-bold',
@@ -333,7 +376,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     paddingRight: 10,
     gap: 3,
-    paddingTop: 10,
+    paddingTop: 0,
   },
   mealsHeaderTxt: {
     fontFamily: 'lato-bold',
@@ -344,7 +387,7 @@ const styles = StyleSheet.create({
   },
   cartBtn: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 10,
     right: 10,
     alignItems: 'flex-end'
 

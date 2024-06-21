@@ -136,10 +136,10 @@ function RootLayoutNav() {
       <Stack.Screen name='(auth)/ewallet/[ewalletID]' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
       <Stack.Screen name='(auth)/ewallet/topupScreen' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
       <Stack.Screen name='(auth)/ewallet/paymentScreen' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
-      <Stack.Screen name='(auth)/orderMeals/orderedList' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
+      {/* <Stack.Screen name='(auth)/orderMeals/orderedList' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
       <Stack.Screen name='(auth)/orderMeals/mealsList' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
       <Stack.Screen name='(auth)/orderMeals/[mealID]' options={{ headerTitle: '', headerTransparent: true }} />
-      <Stack.Screen name='(auth)/orderMeals/viewCart' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
+      <Stack.Screen name='(auth)/orderMeals/viewCart' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} /> */}
       <Stack.Screen name='(auth)/profile/editProfile' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
       <Stack.Screen name='(auth)/profile/manageChildren' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
       <Stack.Screen name='(auth)/profile/changePassword' options={{ headerShown: false, headerTitle: '', headerTransparent: true }} />
